@@ -3,6 +3,7 @@
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
 import type { Group, Mesh, MeshStandardMaterial } from "three"
+import { playSfx } from "@/lib/game/audio"
 import { spheresOverlap } from "@/lib/game/collisions"
 import {
   GAME_DURATION_MS,
@@ -61,6 +62,7 @@ export function Hazards() {
 
     if (elapsedMs.current >= GAME_DURATION_MS) {
       const gameTimeMs = GAME_DURATION_MS
+      playSfx("win")
       patchSnapshot({
         screen: "win",
         gameTimeMs,
@@ -137,6 +139,7 @@ export function Hazards() {
       const current = getSnapshot()
 
       if (slot.kind === "junk") {
+        playSfx("hit")
         if (current.hasShield) {
           patchSnapshot({ hasShield: false, usedShield: true })
           continue
@@ -156,13 +159,16 @@ export function Hazards() {
       }
 
       if (slot.kind === "mate") {
+        playSfx("collect")
         patchSnapshot({
           score: current.score + SCORE_MATE,
           collectedMate: true,
         })
       } else if (slot.kind === "empanada") {
+        playSfx("collect")
         patchSnapshot({ score: current.score + SCORE_EMPANADA })
       } else {
+        playSfx("shield")
         patchSnapshot({ hasShield: true })
       }
     }

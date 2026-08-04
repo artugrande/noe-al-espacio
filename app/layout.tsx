@@ -2,7 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk } from "next/font/google"
 import "./globals.css"
-import { SoundProvider } from "@/components/sound-context"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -30,7 +29,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
       </head>
       <body className={`${spaceGrotesk.variable} font-space-grotesk bg-black`}>
-        <SoundProvider>{children}</SoundProvider>
+        {children}
       </body>
     </html>
   )

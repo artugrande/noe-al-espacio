@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Rocket } from "lucide-react"
 import { getSnapshot, subscribe } from "@/components/game/gameState"
 import { input } from "@/components/game/input"
 import { useMobile } from "@/components/hud/useMobile"
+import { unlock } from "@/lib/game/audio"
 
 export function MobileControls() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
@@ -13,7 +14,10 @@ export function MobileControls() {
   if (!isMobile || snapshot.screen !== "playing") return null
 
   return (
-    <div className="fixed bottom-4 left-0 right-0 z-50 flex items-end justify-between px-4">
+    <div
+      className="fixed bottom-4 left-0 right-0 z-50 flex items-end justify-between px-4"
+      onTouchStart={() => void unlock()}
+    >
       <div className="flex gap-4">
         <button
           type="button"

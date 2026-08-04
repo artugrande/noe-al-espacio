@@ -1,4 +1,5 @@
 import { PLAY_X_MAX, PLAY_X_MIN } from "@/lib/game/constants"
+import { unlock } from "@/lib/game/audio"
 
 let left = false
 let right = false
@@ -26,6 +27,7 @@ export const input = {
 
 export function bindKeyboard() {
   const down = (e: KeyboardEvent) => {
+    void unlock()
     if (e.code === "ArrowLeft" || e.code === "KeyA") input.setLeft(true)
     if (e.code === "ArrowRight" || e.code === "KeyD") input.setRight(true)
     if (e.code === "Space") input.pressLaunch()

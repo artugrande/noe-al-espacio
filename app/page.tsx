@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { GameSession } from "@/components/game/GameSession"
 import { Hud } from "@/components/hud/Hud"
 import { MobileControls } from "@/components/hud/MobileControls"
+import { MuteButton } from "@/components/hud/MuteButton"
 import { OrientationWarning } from "@/components/hud/OrientationWarning"
 import {
   getSnapshot,
@@ -12,6 +13,7 @@ import {
   subscribe,
   type SessionSnapshot,
 } from "@/components/game/gameState"
+import { unlock } from "@/lib/game/audio"
 import { pickCuriosity } from "@/lib/game/curiosidades"
 import { loadHighScores, submitScore } from "@/lib/game/scores"
 import type { AchievementId } from "@/lib/game/types"
@@ -24,6 +26,11 @@ const achievementLabels: Record<AchievementId, string> = {
 
 function useSessionSnapshot() {
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+}
+
+function startWithAudio() {
+  void unlock()
+  startPlaying()
 }
 
 function HomeScreen() {
@@ -55,7 +62,7 @@ function HomeScreen() {
           <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
             <button
               type="button"
-              onClick={startPlaying}
+              onClick={startWithAudio}
               className="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 px-6 py-4 text-xl font-bold shadow-lg shadow-sky-950/40 transition hover:scale-[1.02]"
             >
               🚀 Iniciar Juego
@@ -198,7 +205,7 @@ function EndScreen({
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           <button
             type="button"
-            onClick={startPlaying}
+            onClick={startWithAudio}
             className="rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 px-5 py-3 font-bold"
           >
             Jugar de nuevo
@@ -228,6 +235,7 @@ export default function NoeAlEspacio() {
       ) : (
         <EndScreen snapshot={snapshot} />
       )}
+      <MuteButton />
       <MobileControls />
       <OrientationWarning />
     </main>
