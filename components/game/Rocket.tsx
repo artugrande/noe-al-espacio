@@ -1,8 +1,9 @@
 "use client"
 
 import { useFrame } from "@react-three/fiber"
-import { useRef } from "react"
+import { useRef, useSyncExternalStore } from "react"
 import type { Group } from "three"
+import { getSnapshot, subscribe } from "./gameState"
 import { clampX, input } from "./input"
 import { playerPos } from "./playerRef"
 
@@ -11,6 +12,11 @@ const MOVE_SPEED = 6 // world units / second
 /** GOLDEN RULE: player position updates here — never via useState each frame. */
 export function Rocket({ launched }: { launched: boolean }) {
   const ref = useRef<Group>(null)
+  const hasShield = useSyncExternalStore(
+    subscribe,
+    () => getSnapshot().hasShield,
+    () => false,
+  )
 
   useFrame((_, dt) => {
     const rocket = ref.current
@@ -51,6 +57,31 @@ export function Rocket({ launched }: { launched: boolean }) {
         <boxGeometry args={[0.1, 0.48, 0.16]} />
         <meshStandardMaterial color="#fb923c" flatShading />
       </mesh>
+      {hasShield ? (
+        <group>
+          <mesh>
+            <sphereGeometry args={[0.85, 16, 12]} />
+            <meshStandardMaterial
+              color="#38bdf8"
+              emissive="#0284c7"
+              emissiveIntensity={0.25}
+              transparent
+              opacity={0.18}
+              depthWrite={false}
+            />
+          </mesh>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.78, 0.04, 8, 24]} />
+            <meshStandardMaterial
+              color="#bae6fd"
+              emissive="#0ea5e9"
+              emissiveIntensity={0.9}
+              transparent
+              opacity={0.85}
+            />
+          </mesh>
+        </group>
+      ) : null}
     </group>
   )
 }

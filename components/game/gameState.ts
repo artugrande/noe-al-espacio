@@ -1,4 +1,5 @@
 import type { AchievementId, GameScreen } from "@/lib/game/types"
+import { resetInput } from "./input"
 
 export interface SessionSnapshot {
   screen: GameScreen
@@ -45,10 +46,12 @@ export function subscribe(listener: () => void) {
 }
 
 export function resetSession() {
+  resetInput()
   patchSnapshot({ ...initialSnapshot, achievements: [] })
 }
 
 export function startPlaying() {
+  resetInput()
   patchSnapshot({
     ...initialSnapshot,
     screen: "playing",

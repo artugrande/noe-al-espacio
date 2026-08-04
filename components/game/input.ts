@@ -5,6 +5,12 @@ let left = false
 let right = false
 let launchPressed = false
 
+export function resetInput() {
+  left = false
+  right = false
+  launchPressed = false
+}
+
 export const input = {
   setLeft(v: boolean) {
     left = v

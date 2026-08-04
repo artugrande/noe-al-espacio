@@ -6,9 +6,11 @@ import {
   startPlaying,
   subscribe,
 } from "../../components/game/gameState"
+import { input, resetInput } from "../../components/game/input"
 
 describe("game session state", () => {
   beforeEach(() => {
+    resetInput()
     resetSession()
   })
 
@@ -46,5 +48,18 @@ describe("game session state", () => {
     patchSnapshot({ score: 20 })
 
     expect(listener).toHaveBeenCalledTimes(1)
+  })
+
+  it.each([
+    ["resetSession", resetSession],
+    ["startPlaying", startPlaying],
+  ])("%s clears held and queued input", (_, transition) => {
+    input.setRight(true)
+    input.pressLaunch()
+
+    transition()
+
+    expect(input.axisX()).toBe(0)
+    expect(input.consumeLaunch()).toBe(false)
   })
 })

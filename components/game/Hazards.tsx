@@ -17,6 +17,7 @@ import {
 } from "@/lib/game/constants"
 import { checkAchievements } from "@/lib/game/curiosidades"
 import { getDifficulty } from "@/lib/game/difficulty"
+import { accumulateSpawns } from "@/lib/game/spawning"
 import type { HazardKind } from "@/lib/game/types"
 import { getSnapshot, patchSnapshot } from "./gameState"
 import { playerPos } from "./playerRef"
@@ -45,6 +46,7 @@ export function Hazards() {
   )
   const elapsedMs = useRef(0)
   const hudAccumulatorMs = useRef(0)
+  const spawnAccumulator = useRef(0)
 
   useFrame((_, dt) => {
     const snapshot = getSnapshot()
@@ -76,14 +78,20 @@ export function Hazards() {
 
     const difficulty = getDifficulty(elapsedMs.current)
 
-    if (
-      elapsedMs.current >= SPAWN_DELAY_MS &&
-      Math.random() < difficulty.spawnChance
-    ) {
-      const slotIndex = slots.current.findIndex((slot) => !slot.active)
-      const group = groups.current[slotIndex]
+    if (elapsedMs.current >= SPAWN_DELAY_MS) {
+      const spawnBatch = accumulateSpawns(
+        spawnAccumulator.current,
+        difficulty.spawnChance,
+        dt,
+      )
+      spawnAccumulator.current = spawnBatch.remainder
 
-      if (slotIndex >= 0 && group) {
+      for (let spawnIndex = 0; spawnIndex < spawnBatch.count; spawnIndex += 1) {
+        const slotIndex = slots.current.findIndex((slot) => !slot.active)
+        const group = groups.current[slotIndex]
+
+        if (slotIndex < 0 || !group) break
+
         const slot = slots.current[slotIndex]
         const kind = randomKind()
 

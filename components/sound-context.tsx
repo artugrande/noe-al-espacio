@@ -37,7 +37,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
   // Crear el elemento de audio una sola vez
   useEffect(() => {
-    const audioElement = new Audio("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Interstellar%20%20Hans%20Zimmer%20%20Partitura%2C%20midi%2C%20mp3-Osj8jhjGoFl4jFiSfR4n8biW3BcbHr.mp3")
+    // Background music intentionally has no external source.
+    const audioElement = new Audio()
     audioElement.loop = true
     audioElement.volume = 0.3
     audioElement.preload = "auto"
