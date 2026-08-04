@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Space_Grotesk } from "next/font/google"
 import "./globals.css"
 
@@ -9,10 +9,16 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: "Noe al Espacio",
-  description: "Juego espacial inspirado en la astronauta argentina Noe Castro",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-    generator: 'v0.app'
+  title: "Noe al Espacio 3D",
+  description: "Taller interactivo 3D inspirado en la astronauta argentina Noe Castro",
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#000000",
 }
 
 export default function RootLayout({
@@ -26,7 +32,6 @@ export default function RootLayout({
         {/* Meta tags para forzar orientación horizontal en móviles */}
         <meta name="screen-orientation" content="landscape" />
         <meta name="orientation" content="landscape" />
-        <meta name="theme-color" content="#000000" />
       </head>
       <body className={`${spaceGrotesk.variable} font-space-grotesk bg-black`}>
         {children}
