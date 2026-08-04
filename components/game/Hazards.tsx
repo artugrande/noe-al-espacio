@@ -2,7 +2,7 @@
 
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
-import type { Group, Mesh, MeshStandardMaterial } from "three"
+import type { Group } from "three"
 import { playSfx } from "@/lib/game/audio"
 import { spheresOverlap } from "@/lib/game/collisions"
 import {
@@ -25,12 +25,6 @@ const POOL_SIZE = 32
 const SPAWN_Y = 5.5
 const DESPAWN_Y = -4
 const HUD_UPDATE_MS = 100
-
-const PICKUP_COLORS: Record<Exclude<HazardKind, "junk">, string> = {
-  mate: "#22c55e",
-  empanada: "#f59e0b",
-  shield: "#38bdf8",
-}
 
 interface HazardSlot {
   active: boolean
@@ -92,8 +86,6 @@ export function Hazards() {
       if (slotIndex >= 0 && group) {
         const slot = slots.current[slotIndex]
         const kind = randomKind()
-        const box = group.children[0] as Mesh
-        const sphere = group.children[1] as Mesh
 
         slot.active = true
         slot.kind = kind
@@ -103,14 +95,11 @@ export function Hazards() {
           -2 + Math.random() * 4,
         )
         group.visible = true
-        box.visible = kind === "junk"
-        sphere.visible = kind !== "junk"
-
-        if (kind !== "junk") {
-          const material = sphere.material as MeshStandardMaterial
-          material.color.set(PICKUP_COLORS[kind])
-          sphere.scale.setScalar(kind === "shield" ? 1.2 : 1)
-        }
+        group.children[0].visible = kind === "junk"
+        group.children[1].visible = kind === "mate"
+        group.children[2].visible = kind === "empanada"
+        group.children[3].visible = kind === "shield"
+        group.children[4].visible = kind === "shield"
       }
     }
 
@@ -120,6 +109,8 @@ export function Hazards() {
       if (!slot.active || !group) continue
 
       group.position.y -= difficulty.scrollSpeed * dt
+      group.rotation.x += dt * 0.6
+      group.rotation.y += dt * 0.9
 
       if (group.position.y < DESPAWN_Y) {
         slot.active = false
@@ -185,12 +176,41 @@ export function Hazards() {
           visible={false}
         >
           <mesh>
-            <boxGeometry args={[0.7, 0.7, 0.7]} />
-            <meshStandardMaterial color="#94a3b8" />
+            <icosahedronGeometry args={[0.52, 0]} />
+            <meshStandardMaterial color="#78716c" roughness={0.9} flatShading />
           </mesh>
           <mesh visible={false}>
-            <sphereGeometry args={[HAZARD_RADIUS, 12, 12]} />
-            <meshStandardMaterial color={PICKUP_COLORS.mate} />
+            <capsuleGeometry args={[0.24, 0.32, 4, 8]} />
+            <meshStandardMaterial color="#22c55e" roughness={0.65} flatShading />
+          </mesh>
+          <mesh visible={false} scale={[1.15, 0.55, 0.85]}>
+            <sphereGeometry args={[0.48, 8, 6]} />
+            <meshStandardMaterial
+              color="#f59e0b"
+              emissive="#92400e"
+              emissiveIntensity={0.25}
+              flatShading
+            />
+          </mesh>
+          <mesh visible={false}>
+            <sphereGeometry args={[0.38, 8, 6]} />
+            <meshStandardMaterial
+              color="#38bdf8"
+              transparent
+              opacity={0.24}
+              roughness={0.15}
+            />
+          </mesh>
+          <mesh visible={false} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.43, 0.09, 6, 12]} />
+            <meshStandardMaterial
+              color="#7dd3fc"
+              emissive="#0284c7"
+              emissiveIntensity={0.55}
+              transparent
+              opacity={0.8}
+              flatShading
+            />
           </mesh>
         </group>
       ))}
