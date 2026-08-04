@@ -25,6 +25,9 @@ yarn-error.log*
 # brainstorm / visual companion
 .superpowers/
 
+# local git worktrees
+.worktrees/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
