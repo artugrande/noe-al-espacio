@@ -8,11 +8,14 @@ export const SCORE_MATE = 10
 export const SCORE_EMPANADA = 15
 export const HIGH_SCORES_KEY = "noe_v2_high_scores"
 export const HIGH_SCORES_LIMIT = 5
-export const PLAYER_RADIUS = 0.45
-/** Visual + collision size for junk/pickups — kept small for fair dodging. */
-export const HAZARD_RADIUS = 0.2
-export const PLAY_X_MIN = -4
-export const PLAY_X_MAX = 4
+/** Player hitbox (slightly tight vs visual Starship). */
+export const PLAYER_RADIUS = 0.38
+/** Default junk radius — pickups use larger collect radii in Hazards. */
+export const HAZARD_RADIUS = 0.22
+export const PICKUP_RADIUS = 0.42
+/** Wider lane so movement reaches near the screen edges. */
+export const PLAY_X_MIN = -6.8
+export const PLAY_X_MAX = 6.8
 /** Warm sky → deep space fade after launch. */
 export const ATMOSPHERE_FADE_MS = 40_000
 /** Dense launch smoke window. */

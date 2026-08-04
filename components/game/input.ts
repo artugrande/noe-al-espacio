@@ -51,5 +51,7 @@ export function bindKeyboard() {
 }
 
 export function clampX(x: number) {
-  return Math.min(PLAY_X_MAX, Math.max(PLAY_X_MIN, x))
+  // Small inset so the ship nose doesn't clip the frame edge
+  const pad = 0.15
+  return Math.min(PLAY_X_MAX - pad, Math.max(PLAY_X_MIN + pad, x))
 }

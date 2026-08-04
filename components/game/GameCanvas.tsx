@@ -19,7 +19,7 @@ export function GameCanvas() {
     <div className="absolute inset-0 bg-black">
       <Canvas
         dpr={[1, 1.5]}
-        camera={{ position: [0, 1.2, 8], fov: 50 }}
+        camera={{ position: [0, 0.8, 9.5], fov: 58 }}
         gl={{ antialias: true, powerPreference: "high-performance" }}
       >
         <Suspense fallback={null}>

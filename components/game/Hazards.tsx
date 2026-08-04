@@ -1,13 +1,15 @@
 "use client"
 
+import { Billboard } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
-import { useRef } from "react"
+import { useMemo, useRef } from "react"
 import type { Group } from "three"
 import { playSfx } from "@/lib/game/audio"
-import { spheresOverlap } from "@/lib/game/collisions"
+import { circlesOverlap2D } from "@/lib/game/collisions"
 import {
   GAME_DURATION_MS,
   HAZARD_RADIUS,
+  PICKUP_RADIUS,
   PLAYER_RADIUS,
   PLAY_X_MAX,
   PLAY_X_MIN,
@@ -20,11 +22,12 @@ import { getDifficulty } from "@/lib/game/difficulty"
 import { accumulateSpawns } from "@/lib/game/spawning"
 import type { HazardKind } from "@/lib/game/types"
 import { getSnapshot, patchSnapshot, playClock } from "./gameState"
+import { getMateTexture, getMedialunaTexture } from "./iconTextures"
 import { playerPos } from "./playerRef"
 
 const POOL_SIZE = 32
-const SPAWN_Y = 5.5
-const DESPAWN_Y = -4
+const SPAWN_Y = 5.8
+const DESPAWN_Y = -4.2
 const HUD_UPDATE_MS = 100
 
 interface HazardSlot {
@@ -39,6 +42,10 @@ function randomKind(): HazardKind {
   return pickupRoll < 0.525 ? "mate" : "empanada"
 }
 
+function radiusFor(kind: HazardKind) {
+  return kind === "junk" ? HAZARD_RADIUS : PICKUP_RADIUS
+}
+
 export function Hazards() {
   const groups = useRef<Array<Group | null>>(Array(POOL_SIZE).fill(null))
   const slots = useRef<HazardSlot[]>(
@@ -48,9 +55,13 @@ export function Hazards() {
   const hudAccumulatorMs = useRef(0)
   const spawnAccumulator = useRef(0)
 
+  const mateMap = useMemo(() => getMateTexture(), [])
+  const medialunaMap = useMemo(() => getMedialunaTexture(), [])
+
   useFrame((_, dt) => {
     const snapshot = getSnapshot()
-    if (snapshot.screen !== "playing" || snapshot.paused || !snapshot.launched) return
+    if (snapshot.screen !== "playing" || snapshot.paused || !snapshot.launched)
+      return
 
     const frameMs = dt * 1000
     elapsedMs.current += frameMs
@@ -90,20 +101,21 @@ export function Hazards() {
       for (let spawnIndex = 0; spawnIndex < spawnBatch.count; spawnIndex += 1) {
         const slotIndex = slots.current.findIndex((slot) => !slot.active)
         const group = groups.current[slotIndex]
-
         if (slotIndex < 0 || !group) break
 
         const slot = slots.current[slotIndex]
         const kind = randomKind()
-
         slot.active = true
         slot.kind = kind
+
+        // Spawn across full play width; keep Z near play lane for readability
         group.position.set(
           PLAY_X_MIN + Math.random() * (PLAY_X_MAX - PLAY_X_MIN),
           SPAWN_Y,
-          -2 + Math.random() * 4,
+          (Math.random() - 0.5) * 0.6,
         )
         group.visible = true
+        group.rotation.set(0, 0, 0)
         group.children[0].visible = kind === "junk"
         group.children[1].visible = kind === "mate"
         group.children[2].visible = kind === "empanada"
@@ -118,8 +130,12 @@ export function Hazards() {
       if (!slot.active || !group) continue
 
       group.position.y -= difficulty.scrollSpeed * dt
-      group.rotation.x += dt * 0.6
-      group.rotation.y += dt * 0.9
+
+      // Only tumble rocks — icons stay upright via Billboard
+      if (slot.kind === "junk") {
+        group.rotation.x += dt * 1.1
+        group.rotation.z += dt * 0.7
+      }
 
       if (group.position.y < DESPAWN_Y) {
         slot.active = false
@@ -128,8 +144,12 @@ export function Hazards() {
       }
 
       if (
-        Math.abs(group.position.z - playerPos.z) >= 0.75 ||
-        !spheresOverlap(group.position, HAZARD_RADIUS, playerPos, PLAYER_RADIUS)
+        !circlesOverlap2D(
+          group.position,
+          radiusFor(slot.kind),
+          playerPos,
+          PLAYER_RADIUS,
+        )
       ) {
         continue
       }
@@ -184,70 +204,77 @@ export function Hazards() {
           }}
           visible={false}
         >
-          {/* 0: junk — smaller rock */}
-          <mesh>
-            <icosahedronGeometry args={[0.28, 0]} />
-            <meshStandardMaterial color="#78716c" roughness={0.95} flatShading />
-          </mesh>
-          {/* 1: mate — calabaza + bombilla */}
-          <group visible={false}>
-            <mesh position={[0, -0.02, 0]} scale={[1, 0.85, 1]}>
-              <sphereGeometry args={[0.22, 8, 6]} />
-              <meshStandardMaterial color="#15803d" roughness={0.7} flatShading />
-            </mesh>
-            <mesh position={[0, 0.16, 0]}>
-              <cylinderGeometry args={[0.07, 0.09, 0.08, 8]} />
-              <meshStandardMaterial color="#166534" flatShading />
-            </mesh>
-            <mesh position={[0.05, 0.28, 0]} rotation={[0, 0, -0.35]}>
-              <cylinderGeometry args={[0.018, 0.018, 0.28, 6]} />
+          {/* 0: asteroid cluster */}
+          <group>
+            <mesh>
+              <dodecahedronGeometry args={[0.26, 0]} />
               <meshStandardMaterial
-                color="#d4d4d8"
-                metalness={0.8}
-                roughness={0.25}
-              />
-            </mesh>
-          </group>
-          {/* 2: medialuna / croissant */}
-          <group visible={false} rotation={[0.4, 0.2, 0.15]}>
-            <mesh rotation={[Math.PI / 2, 0, 0]} scale={[1, 1, 0.55]}>
-              <torusGeometry args={[0.2, 0.09, 6, 14, Math.PI * 1.15]} />
-              <meshStandardMaterial
-                color="#f0c987"
-                emissive="#b45309"
-                emissiveIntensity={0.12}
+                color="#a8a29e"
+                roughness={0.95}
                 flatShading
-                roughness={0.65}
               />
             </mesh>
-            <mesh
-              position={[0.02, 0.02, 0.02]}
-              rotation={[Math.PI / 2, 0.1, 0]}
-              scale={[0.85, 0.85, 0.4]}
-            >
-              <torusGeometry args={[0.16, 0.05, 5, 12, Math.PI * 1.05]} />
-              <meshStandardMaterial color="#fde68a" flatShading roughness={0.55} />
+            <mesh position={[0.14, 0.08, -0.06]} scale={0.55}>
+              <icosahedronGeometry args={[0.22, 0]} />
+              <meshStandardMaterial
+                color="#78716c"
+                roughness={1}
+                flatShading
+              />
+            </mesh>
+            <mesh position={[-0.12, -0.1, 0.08]} scale={0.4}>
+              <tetrahedronGeometry args={[0.28, 0]} />
+              <meshStandardMaterial
+                color="#57534e"
+                roughness={1}
+                flatShading
+              />
             </mesh>
           </group>
+
+          {/* 1: mate icon — visibility toggled on this Billboard */}
+          <Billboard follow lockZ={false} visible={false}>
+            <mesh>
+              <planeGeometry args={[0.9, 0.9]} />
+              <meshBasicMaterial
+                map={mateMap ?? undefined}
+                transparent
+                depthWrite={false}
+              />
+            </mesh>
+          </Billboard>
+
+          {/* 2: medialuna icon */}
+          <Billboard follow lockZ={false} visible={false}>
+            <mesh>
+              <planeGeometry args={[1, 1]} />
+              <meshBasicMaterial
+                map={medialunaMap ?? undefined}
+                transparent
+                depthWrite={false}
+              />
+            </mesh>
+          </Billboard>
+
           {/* 3–4: shield */}
           <mesh visible={false}>
-            <sphereGeometry args={[0.26, 8, 6]} />
+            <sphereGeometry args={[0.3, 12, 10]} />
             <meshStandardMaterial
               color="#38bdf8"
+              emissive="#0ea5e9"
+              emissiveIntensity={0.4}
               transparent
-              opacity={0.24}
-              roughness={0.15}
+              opacity={0.35}
             />
           </mesh>
           <mesh visible={false} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.3, 0.055, 6, 14]} />
+            <torusGeometry args={[0.34, 0.06, 8, 20]} />
             <meshStandardMaterial
-              color="#7dd3fc"
-              emissive="#0284c7"
-              emissiveIntensity={0.55}
+              color="#e0f2fe"
+              emissive="#38bdf8"
+              emissiveIntensity={0.8}
               transparent
-              opacity={0.85}
-              flatShading
+              opacity={0.9}
             />
           </mesh>
         </group>
