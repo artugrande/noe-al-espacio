@@ -1,12 +1,14 @@
 "use client"
 
-import { Stars } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
-import { useSyncExternalStore } from "react"
+import { useRef, useSyncExternalStore } from "react"
+import type { Group } from "three"
+import { ATMOSPHERE_FADE_MS, GAME_DURATION_MS } from "@/lib/game/constants"
 import { Effects } from "./Effects"
-import { getSnapshot, patchSnapshot, subscribe } from "./gameState"
+import { getSnapshot, patchSnapshot, playClock, subscribe } from "./gameState"
 import { Hazards } from "./Hazards"
 import { input } from "./input"
+import { LaunchEnvironment } from "./LaunchEnvironment"
 import { Rocket } from "./Rocket"
 
 function LaunchController() {
@@ -38,8 +40,34 @@ function RocketBridge() {
 }
 
 function SpaceStation() {
+  const ref = useRef<Group>(null)
+
+  useFrame(() => {
+    const { screen, launched } = getSnapshot()
+    const group = ref.current
+    if (!group) return
+
+    // Fade ISS in during the last stretch (like v1)
+    const appearStart = GAME_DURATION_MS - 25_000
+    const gameTimeMs = playClock.elapsedMs
+    let opacity = 0
+    if (screen === "playing" && launched && gameTimeMs >= appearStart) {
+      opacity = Math.min(1, (gameTimeMs - appearStart) / 12_000)
+    }
+    if (screen === "win") opacity = 1
+
+    group.visible = opacity > 0.02
+    group.traverse((obj) => {
+      const mesh = obj as { isMesh?: boolean; material?: { opacity?: number; transparent?: boolean; depthWrite?: boolean } }
+      if (!mesh.isMesh || !mesh.material) return
+      mesh.material.transparent = true
+      mesh.material.opacity = opacity
+      mesh.material.depthWrite = opacity > 0.5
+    })
+  })
+
   return (
-    <group position={[0, 2.5, -6]} rotation={[0.12, 0.2, -0.08]}>
+    <group ref={ref} position={[0, 2.6, -6]} rotation={[0.12, 0.2, -0.08]} visible={false}>
       <mesh>
         <boxGeometry args={[2.2, 0.34, 0.42]} />
         <meshStandardMaterial color="#d6d3d1" metalness={0.35} flatShading />
@@ -74,13 +102,39 @@ function SpaceStation() {
   )
 }
 
+function SunLight() {
+  useFrame((state) => {
+    const { launched, screen } = getSnapshot()
+    const t =
+      screen === "playing" && launched
+        ? Math.min(1, playClock.elapsedMs / ATMOSPHERE_FADE_MS)
+        : 0
+    // Warm strong light on Earth, cooler/dimmer in space
+    const dir = state.scene.getObjectByName("sun-light") as
+      | { intensity?: number; color?: { set?: (c: string) => void } }
+      | undefined
+    if (dir?.intensity != null) {
+      dir.intensity = 1.35 - t * 0.55
+      dir.color?.set?.(t > 0.6 ? "#c7d2fe" : "#ffd7a8")
+    }
+  })
+
+  return (
+    <directionalLight
+      name="sun-light"
+      position={[5, 8, 3]}
+      intensity={1.35}
+      color="#ffd7a8"
+    />
+  )
+}
+
 export function Scene() {
   return (
     <>
-      <color attach="background" args={["#020617"]} />
-      <ambientLight intensity={0.45} />
-      <directionalLight position={[4, 6, 2]} intensity={1.2} />
-      <Stars radius={80} depth={40} count={1200} factor={3} fade speed={0.6} />
+      <ambientLight intensity={0.4} />
+      <SunLight />
+      <LaunchEnvironment />
       <LaunchController />
       <RocketBridge />
       <Hazards />

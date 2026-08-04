@@ -9,6 +9,13 @@ export const SCORE_EMPANADA = 15
 export const HIGH_SCORES_KEY = "noe_v2_high_scores"
 export const HIGH_SCORES_LIMIT = 5
 export const PLAYER_RADIUS = 0.45
-export const HAZARD_RADIUS = 0.35
+/** Visual + collision size for junk/pickups — kept small for fair dodging. */
+export const HAZARD_RADIUS = 0.2
 export const PLAY_X_MIN = -4
 export const PLAY_X_MAX = 4
+/** Warm sky → deep space fade after launch. */
+export const ATMOSPHERE_FADE_MS = 40_000
+/** Dense launch smoke window. */
+export const LAUNCH_SMOKE_MS = 9_000
+/** How fast the earth scenery scrolls away under the rocket. */
+export const LAUNCH_SCROLL_SPEED = 1.35

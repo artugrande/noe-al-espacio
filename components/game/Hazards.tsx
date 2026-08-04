@@ -19,7 +19,7 @@ import { checkAchievements } from "@/lib/game/curiosidades"
 import { getDifficulty } from "@/lib/game/difficulty"
 import { accumulateSpawns } from "@/lib/game/spawning"
 import type { HazardKind } from "@/lib/game/types"
-import { getSnapshot, patchSnapshot } from "./gameState"
+import { getSnapshot, patchSnapshot, playClock } from "./gameState"
 import { playerPos } from "./playerRef"
 
 const POOL_SIZE = 32
@@ -54,6 +54,7 @@ export function Hazards() {
 
     const frameMs = dt * 1000
     elapsedMs.current += frameMs
+    playClock.elapsedMs = elapsedMs.current
     hudAccumulatorMs.current += frameMs
 
     if (elapsedMs.current >= GAME_DURATION_MS) {
@@ -183,25 +184,54 @@ export function Hazards() {
           }}
           visible={false}
         >
+          {/* 0: junk — smaller rock */}
           <mesh>
-            <icosahedronGeometry args={[0.52, 0]} />
-            <meshStandardMaterial color="#78716c" roughness={0.9} flatShading />
+            <icosahedronGeometry args={[0.28, 0]} />
+            <meshStandardMaterial color="#78716c" roughness={0.95} flatShading />
           </mesh>
+          {/* 1: mate — calabaza + bombilla */}
+          <group visible={false}>
+            <mesh position={[0, -0.02, 0]} scale={[1, 0.85, 1]}>
+              <sphereGeometry args={[0.22, 8, 6]} />
+              <meshStandardMaterial color="#15803d" roughness={0.7} flatShading />
+            </mesh>
+            <mesh position={[0, 0.16, 0]}>
+              <cylinderGeometry args={[0.07, 0.09, 0.08, 8]} />
+              <meshStandardMaterial color="#166534" flatShading />
+            </mesh>
+            <mesh position={[0.05, 0.28, 0]} rotation={[0, 0, -0.35]}>
+              <cylinderGeometry args={[0.018, 0.018, 0.28, 6]} />
+              <meshStandardMaterial
+                color="#d4d4d8"
+                metalness={0.8}
+                roughness={0.25}
+              />
+            </mesh>
+          </group>
+          {/* 2: medialuna / croissant */}
+          <group visible={false} rotation={[0.4, 0.2, 0.15]}>
+            <mesh rotation={[Math.PI / 2, 0, 0]} scale={[1, 1, 0.55]}>
+              <torusGeometry args={[0.2, 0.09, 6, 14, Math.PI * 1.15]} />
+              <meshStandardMaterial
+                color="#f0c987"
+                emissive="#b45309"
+                emissiveIntensity={0.12}
+                flatShading
+                roughness={0.65}
+              />
+            </mesh>
+            <mesh
+              position={[0.02, 0.02, 0.02]}
+              rotation={[Math.PI / 2, 0.1, 0]}
+              scale={[0.85, 0.85, 0.4]}
+            >
+              <torusGeometry args={[0.16, 0.05, 5, 12, Math.PI * 1.05]} />
+              <meshStandardMaterial color="#fde68a" flatShading roughness={0.55} />
+            </mesh>
+          </group>
+          {/* 3–4: shield */}
           <mesh visible={false}>
-            <capsuleGeometry args={[0.24, 0.32, 4, 8]} />
-            <meshStandardMaterial color="#22c55e" roughness={0.65} flatShading />
-          </mesh>
-          <mesh visible={false} scale={[1.15, 0.55, 0.85]}>
-            <sphereGeometry args={[0.48, 8, 6]} />
-            <meshStandardMaterial
-              color="#f59e0b"
-              emissive="#92400e"
-              emissiveIntensity={0.25}
-              flatShading
-            />
-          </mesh>
-          <mesh visible={false}>
-            <sphereGeometry args={[0.38, 8, 6]} />
+            <sphereGeometry args={[0.26, 8, 6]} />
             <meshStandardMaterial
               color="#38bdf8"
               transparent
@@ -210,13 +240,13 @@ export function Hazards() {
             />
           </mesh>
           <mesh visible={false} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.43, 0.09, 6, 12]} />
+            <torusGeometry args={[0.3, 0.055, 6, 14]} />
             <meshStandardMaterial
               color="#7dd3fc"
               emissive="#0284c7"
               emissiveIntensity={0.55}
               transparent
-              opacity={0.8}
+              opacity={0.85}
               flatShading
             />
           </mesh>

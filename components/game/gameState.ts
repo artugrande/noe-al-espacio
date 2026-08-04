@@ -27,6 +27,9 @@ const initialSnapshot: SessionSnapshot = {
 
 let snapshot: SessionSnapshot = initialSnapshot
 
+/** High-frequency clock for atmosphere / VFX (not React state). */
+export const playClock = { elapsedMs: 0 }
+
 const listeners = new Set<() => void>()
 
 export function getSnapshot() {
@@ -47,11 +50,13 @@ export function subscribe(listener: () => void) {
 
 export function resetSession() {
   resetInput()
+  playClock.elapsedMs = 0
   patchSnapshot({ ...initialSnapshot, achievements: [] })
 }
 
 export function startPlaying() {
   resetInput()
+  playClock.elapsedMs = 0
   patchSnapshot({
     ...initialSnapshot,
     screen: "playing",
