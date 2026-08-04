@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
 import type { Mesh } from "three"
 import { clampX, input } from "./input"
+import { playerPos } from "./playerRef"
 
 const MOVE_SPEED = 6 // world units / second
 
@@ -13,8 +14,13 @@ export function Rocket({ launched }: { launched: boolean }) {
 
   useFrame((_, dt) => {
     const mesh = ref.current
-    if (!mesh || !launched) return
-    mesh.position.x = clampX(mesh.position.x + input.axisX() * MOVE_SPEED * dt)
+    if (!mesh) return
+    if (launched) {
+      mesh.position.x = clampX(mesh.position.x + input.axisX() * MOVE_SPEED * dt)
+    }
+    playerPos.x = mesh.position.x
+    playerPos.y = mesh.position.y
+    playerPos.z = mesh.position.z
   })
 
   return (

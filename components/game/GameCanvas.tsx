@@ -1,13 +1,10 @@
 "use client"
 
 import { Canvas } from "@react-three/fiber"
-import { Suspense, useEffect } from "react"
-import { bindKeyboard } from "./input"
+import { Suspense } from "react"
 import { Scene } from "./Scene"
 
 export function GameCanvas() {
-  useEffect(() => bindKeyboard(), [])
-
   return (
     <div className="absolute inset-0 bg-black">
       <Canvas
