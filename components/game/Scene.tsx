@@ -3,6 +3,7 @@
 import { Stars } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { useSyncExternalStore } from "react"
+import { Effects } from "./Effects"
 import { getSnapshot, patchSnapshot, subscribe } from "./gameState"
 import { Hazards } from "./Hazards"
 import { input } from "./input"
@@ -36,6 +37,43 @@ function RocketBridge() {
   return <Rocket launched={launched} />
 }
 
+function SpaceStation() {
+  return (
+    <group position={[0, 2.5, -6]} rotation={[0.12, 0.2, -0.08]}>
+      <mesh>
+        <boxGeometry args={[2.2, 0.34, 0.42]} />
+        <meshStandardMaterial color="#d6d3d1" metalness={0.35} flatShading />
+      </mesh>
+      <mesh position={[-0.72, 0.38, 0]}>
+        <boxGeometry args={[0.48, 0.48, 0.48]} />
+        <meshStandardMaterial color="#a8a29e" flatShading />
+      </mesh>
+      <mesh position={[0.72, -0.36, 0]}>
+        <boxGeometry args={[0.58, 0.36, 0.36]} />
+        <meshStandardMaterial color="#e7e5e4" flatShading />
+      </mesh>
+      <mesh position={[-1.75, 0, 0]}>
+        <boxGeometry args={[1.25, 0.06, 0.72]} />
+        <meshStandardMaterial
+          color="#1d4ed8"
+          emissive="#1e40af"
+          emissiveIntensity={0.3}
+          flatShading
+        />
+      </mesh>
+      <mesh position={[1.75, 0, 0]}>
+        <boxGeometry args={[1.25, 0.06, 0.72]} />
+        <meshStandardMaterial
+          color="#1d4ed8"
+          emissive="#1e40af"
+          emissiveIntensity={0.3}
+          flatShading
+        />
+      </mesh>
+    </group>
+  )
+}
+
 export function Scene() {
   return (
     <>
@@ -46,10 +84,8 @@ export function Scene() {
       <LaunchController />
       <RocketBridge />
       <Hazards />
-      <mesh position={[0, 2.5, -6]}>
-        <boxGeometry args={[2.4, 0.4, 0.4]} />
-        <meshStandardMaterial color="#e2e8f0" />
-      </mesh>
+      <Effects />
+      <SpaceStation />
     </>
   )
 }
