@@ -168,10 +168,12 @@ function EndScreen({
 }) {
   const submitted = useRef(false)
   const won = snapshot.screen === "win"
+  const [highScores, setHighScores] =
+    useState<ReturnType<typeof loadHighScores>>([])
 
   useEffect(() => {
     if (submitted.current) return
-    submitScore(snapshot.score)
+    setHighScores(submitScore(snapshot.score))
     submitted.current = true
   }, [snapshot.score])
 
@@ -202,6 +204,21 @@ function EndScreen({
             </ul>
           </div>
         ) : null}
+
+        <div className="mt-6">
+          <h2 className="font-bold text-amber-300">🏆 Mejores puntajes</h2>
+          <ol className="mt-3 space-y-2">
+            {highScores.map((entry, index) => (
+              <li
+                key={`${entry.at}-${index}`}
+                className="flex justify-between rounded-xl bg-black/20 px-4 py-2 text-sm"
+              >
+                <span>#{index + 1}</span>
+                <strong>{entry.score} puntos</strong>
+              </li>
+            ))}
+          </ol>
+        </div>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           <button
