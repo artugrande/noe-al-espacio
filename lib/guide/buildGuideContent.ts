@@ -203,6 +203,7 @@ export const GUIDE_PAGES: GuidePage[] = [
           "React Three Fiber + Drei + Three.js — el mundo 3D (cohete, asteroides, estación).",
           "Vitest — reglas del juego testeables sin abrir el navegador.",
           "Vercel — publicar con un link compartible.",
+          "Supabase — base de datos del ranking global (Postgres + API).",
           "Cursor — acelerar lectura, cambios y explicaciones.",
         ],
       },
@@ -255,12 +256,14 @@ export const GUIDE_PAGES: GuidePage[] = [
       {
         type: "ul",
         items: [
-          "app/ — páginas (inicio, /construir) y estilos globales.",
+          "app/ — páginas (inicio, /construir), API routes y estilos.",
+          "app/api/scores — publica y lee el ranking global.",
           "components/game/ — escena 3D: Rocket, Hazards, SpaceStation, LaunchEnvironment…",
-          "components/hud/ — puntaje, tiempo, toasts, controles móviles.",
-          "lib/game/ — constants, colisiones, combo, formaciones, scores.",
+          "components/hud/ — puntaje, tiempo, toasts, controles, formulario del ranking.",
+          "lib/game/ — constants, colisiones, combo, formaciones, scores, leaderboard.",
+          "supabase/migrations/ — SQL de la tabla leaderboard.",
           "docs/workshop/ — módulos del taller paso a paso (aún más detalle).",
-          "public/images/ — assets (sprites de referencia, íconos).",
+          "public/images/ — assets (logo, ilustración de victoria…).",
         ],
       },
       {
@@ -414,6 +417,52 @@ export const GUIDE_PAGES: GuidePage[] = [
     ],
   },
   {
+    id: "supabase",
+    eyebrow: "Datos en la nube",
+    title: "Supabase y el ranking global",
+    subtitle:
+      "localStorage guarda el score en tu navegador. Supabase lo guarda para todo el mundo.",
+    blocks: [
+      {
+        type: "p",
+        text: "Cuando terminás una misión, podés escribir tu nombre y publicarlo. Ese puntaje viaja a una base Postgres en Supabase y aparece en el top 10 de la home — no solo en tu celular o compu.",
+      },
+      {
+        type: "ol",
+        items: [
+          "El navegador llama a /api/scores (una API Route de Next.js).",
+          "El servidor valida nombre y puntaje (nada de nombres raros ni scores imposibles).",
+          "Supabase guarda la fila en la tabla leaderboard.",
+          "La home pide el ranking ordenado por score y lo muestra a todos.",
+        ],
+      },
+      {
+        type: "ul",
+        items: [
+          "Tabla: leaderboard (id, name, score, created_at).",
+          "Clientes: utils/supabase/ (browser, server y middleware).",
+          "SQL del proyecto: supabase/migrations/001_leaderboard.sql.",
+          "Keepalive: un cron diario en Vercel pingeá la API para que el free tier de Supabase no se pause si nadie juega un rato.",
+        ],
+      },
+      {
+        type: "callout",
+        tone: "violet",
+        title: "Por qué Supabase (y no solo localStorage)",
+        text: "localStorage es genial para prototipar: cero setup. Pero cada dispositivo tiene su propia lista. Con Supabase el ranking es compartido, gratis en el plan free, y te enseña el patrón real: front → API → base de datos.",
+      },
+      {
+        type: "code",
+        label: "Idea del flujo",
+        text: "Juego termina\n  → POST /api/scores { name, score }\n  → Supabase.insert(leaderboard)\n  → GET /api/scores → top 10 global",
+      },
+      {
+        type: "prompt",
+        text: "Explicame como a un taller de 15 años: qué diferencia hay entre guardar el puntaje en localStorage y guardarlo en Supabase. Mostrame qué archivo hace el insert y qué SQL crea la tabla.",
+      },
+    ],
+  },
+  {
     id: "taller",
     eyebrow: "Para docentes y clubs",
     title: "Cómo usarlo en un taller",
@@ -504,7 +553,7 @@ export const GUIDE_PAGES: GuidePage[] = [
         type: "callout",
         tone: "amber",
         title: "Tu checklist de misión",
-        text: "1 mecánicá tuya · 1 asset con identidad local · 1 deploy público · 1 persona a la que le enseñaste cómo se juega.",
+        text: "1 mecánica tuya · 1 asset con identidad local · 1 deploy público · (opcional) 1 ranking con Supabase · 1 persona a la que le enseñaste cómo se juega.",
       },
       {
         type: "p",
