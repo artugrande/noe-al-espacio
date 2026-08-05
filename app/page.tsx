@@ -48,16 +48,16 @@ function HomeScreen() {
   }, [])
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[radial-gradient(circle_at_top,#172554,#020617_55%,#000)] px-5 py-10 text-white">
-      <div className="w-full max-w-4xl">
-        <header className="mb-8 flex flex-col items-center text-center">
+    <section className="relative min-h-screen bg-[radial-gradient(circle_at_top,#172554,#020617_55%,#000)] px-5 py-8 text-white sm:py-10">
+      <div className="mx-auto w-full max-w-4xl pb-12">
+        <header className="mb-6 flex flex-col items-center text-center">
           <Image
             src="/images/noe-al-espacio-logo.png"
             alt="Noe al Espacio"
-            width={926}
-            height={1046}
+            width={930}
+            height={1050}
             priority
-            className="mb-4 h-auto w-[min(18rem,72vw)] drop-shadow-[0_12px_40px_rgba(56,189,248,0.35)] sm:w-[min(22rem,50vw)]"
+            className="mb-3 h-auto w-[min(10.5rem,42vw)] drop-shadow-[0_10px_28px_rgba(56,189,248,0.3)] sm:w-[min(12rem,28vw)]"
           />
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
             Misión Argentina
@@ -286,7 +286,7 @@ export default function NoeAlEspacio() {
   const snapshot = useSessionSnapshot()
 
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen overflow-y-auto bg-black">
       {snapshot.screen === "home" || snapshot.screen === "loading" ? (
         <HomeScreen />
       ) : snapshot.screen === "playing" || snapshot.screen === "win" ? (

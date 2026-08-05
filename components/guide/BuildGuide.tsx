@@ -53,8 +53,8 @@ export function BuildGuide() {
             <Image
               src="/images/noe-al-espacio-logo.png"
               alt="Noe al Espacio"
-              width={926}
-              height={1046}
+              width={930}
+              height={1050}
               className="h-12 w-auto sm:h-14"
               priority
             />
@@ -113,8 +113,8 @@ export function BuildGuide() {
               <Image
                 src="/images/noe-al-espacio-logo.png"
                 alt="Noe al Espacio"
-                width={926}
-                height={1046}
+                width={930}
+                height={1050}
                 className="mx-auto mb-6 h-auto w-[min(14rem,55vw)] drop-shadow-[0_10px_30px_rgba(56,189,248,0.3)]"
                 priority
               />
@@ -215,8 +215,8 @@ export function BuildGuide() {
                   <Image
                     src="/images/noe-al-espacio-logo.png"
                     alt="Noe al Espacio"
-                    width={926}
-                    height={1046}
+                    width={930}
+                    height={1050}
                     className="mx-auto mb-6 h-auto w-[min(16rem,60vw)]"
                   />
                 ) : null}
