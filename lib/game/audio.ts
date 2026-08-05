@@ -47,6 +47,8 @@ export function initSoundtrack() {
   soundtrack.loop = true
   soundtrack.preload = "auto"
   soundtrack.volume = SOUNDTRACK_VOLUME
+  soundtrack.setAttribute("playsinline", "true")
+  soundtrack.setAttribute("webkit-playsinline", "true")
   return soundtrack
 }
 
@@ -54,15 +56,23 @@ export function pauseSoundtrack() {
   soundtrack?.pause()
 }
 
-export async function playSoundtrack() {
+export function isSoundtrackPlaying() {
+  return Boolean(soundtrack && !soundtrack.paused && !soundtrack.ended)
+}
+
+/** @returns true if playback actually started */
+export async function playSoundtrack(): Promise<boolean> {
   const track = initSoundtrack()
-  if (!track || readMuted()) return
+  if (!track) return false
+  if (readMuted()) return false
 
   await unlock()
   try {
     await track.play()
+    return !track.paused
   } catch {
-    // Autoplay may be blocked until a user gesture.
+    // Chromium/Safari block unmuted autoplay without a prior user gesture.
+    return false
   }
 }
 
