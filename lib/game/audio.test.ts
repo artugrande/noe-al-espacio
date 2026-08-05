@@ -47,8 +47,15 @@ class FakeHtmlAudio {
   preload = ""
   volume = 1
   src = ""
-  play = vi.fn(async () => undefined)
-  pause = vi.fn()
+  paused = true
+  ended = false
+  play = vi.fn(async () => {
+    this.paused = false
+  })
+  pause = vi.fn(() => {
+    this.paused = true
+  })
+  setAttribute = vi.fn()
 
   constructor(src?: string) {
     if (src) this.src = src
