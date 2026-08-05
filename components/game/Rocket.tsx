@@ -3,6 +3,7 @@
 import { useFrame } from "@react-three/fiber"
 import { useRef, useSyncExternalStore } from "react"
 import type { Group, Mesh } from "three"
+import { BOOST_MOVE_MULT } from "@/lib/game/constants"
 import { getSnapshot, subscribe } from "./gameState"
 import { clampX, input } from "./input"
 import { playerPos } from "./playerRef"
@@ -21,23 +22,30 @@ export function Rocket({ launched }: { launched: boolean }) {
     () => getSnapshot().hasShield,
     () => false,
   )
+  const boosting = useSyncExternalStore(
+    subscribe,
+    () => getSnapshot().boostRemainingMs > 0,
+    () => false,
+  )
 
   useFrame((state, dt) => {
     const rocket = ref.current
     if (!rocket) return
 
-    const { screen } = getSnapshot()
+    const { screen, boostRemainingMs } = getSnapshot()
     const won = screen === "win"
+    const speed =
+      MOVE_SPEED * (boostRemainingMs > 0 ? BOOST_MOVE_MULT : 1)
 
     if (won) {
       rocket.position.x += (0 - rocket.position.x) * Math.min(1, dt * 3.2)
-      rocket.position.y += (0 - rocket.position.y) * Math.min(1, dt * 2.4)
+      rocket.position.y += (-0.35 - rocket.position.y) * Math.min(1, dt * 2.4)
       rocket.rotation.z += (0 - rocket.rotation.z) * Math.min(1, dt * 4)
     } else if (launched) {
       rocket.position.x = clampX(
-        rocket.position.x + input.axisX() * MOVE_SPEED * dt,
+        rocket.position.x + input.axisX() * speed * dt,
       )
-      rocket.rotation.z = -input.axisX() * 0.14
+      rocket.rotation.z = -input.axisX() * (boostRemainingMs > 0 ? 0.2 : 0.14)
     } else {
       rocket.rotation.z = 0
     }
@@ -183,6 +191,19 @@ export function Rocket({ launched }: { launched: boolean }) {
             />
           </mesh>
         </group>
+      ) : null}
+
+      {boosting ? (
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.55, 0.04, 8, 24]} />
+          <meshStandardMaterial
+            color="#fef08a"
+            emissive="#facc15"
+            emissiveIntensity={1.1}
+            transparent
+            opacity={0.85}
+          />
+        </mesh>
       ) : null}
     </group>
   )

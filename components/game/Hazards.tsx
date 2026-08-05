@@ -7,6 +7,9 @@ import type { Group } from "three"
 import { playSfx } from "@/lib/game/audio"
 import { circlesOverlap2D } from "@/lib/game/collisions"
 import {
+  ARRIVAL_CLEAR_MS,
+  BOOST_DURATION_MS,
+  BOOST_SCROLL_MULT,
   GAME_DURATION_MS,
   HAZARD_RADIUS,
   PICKUP_RADIUS,
@@ -38,10 +41,11 @@ interface HazardSlot {
 }
 
 function randomKind(): HazardKind {
-  if (Math.random() < 0.7) return "junk"
+  if (Math.random() < 0.66) return "junk"
   const pickupRoll = Math.random()
-  if (pickupRoll < 0.05) return "shield"
-  return pickupRoll < 0.525 ? "mate" : "empanada"
+  if (pickupRoll < 0.1) return "shield"
+  if (pickupRoll < 0.2) return "boost"
+  return pickupRoll < 0.6 ? "mate" : "empanada"
 }
 
 /** Variable asteroid size — small / medium / chunky. */
@@ -57,6 +61,15 @@ function radiusFor(kind: HazardKind, scale: number) {
   return PICKUP_RADIUS
 }
 
+function deactivate(
+  slot: HazardSlot,
+  group: Group,
+) {
+  slot.active = false
+  group.visible = false
+  group.scale.setScalar(1)
+}
+
 export function Hazards() {
   const groups = useRef<Array<Group | null>>(Array(POOL_SIZE).fill(null))
   const slots = useRef<HazardSlot[]>(
@@ -69,6 +82,7 @@ export function Hazards() {
   const elapsedMs = useRef(0)
   const hudAccumulatorMs = useRef(0)
   const spawnAccumulator = useRef(0)
+  const boostRemaining = useRef(0)
 
   const mateMap = useMemo(() => getMateTexture(), [])
   const medialunaMap = useMemo(() => getMedialunaTexture(), [])
@@ -83,16 +97,22 @@ export function Hazards() {
     playClock.elapsedMs = elapsedMs.current
     hudAccumulatorMs.current += frameMs
 
+    if (boostRemaining.current > 0) {
+      boostRemaining.current = Math.max(0, boostRemaining.current - frameMs)
+    }
+
     if (elapsedMs.current >= GAME_DURATION_MS) {
       const gameTimeMs = GAME_DURATION_MS
       playSfx("win")
       patchSnapshot({
         screen: "win",
         gameTimeMs,
+        boostRemainingMs: 0,
         achievements: checkAchievements({
           collectedMate: snapshot.collectedMate,
           gameTimeMs,
           usedShield: snapshot.usedShield,
+          usedBoost: snapshot.usedBoost,
         }),
       })
       return
@@ -100,10 +120,32 @@ export function Hazards() {
 
     if (hudAccumulatorMs.current >= HUD_UPDATE_MS) {
       hudAccumulatorMs.current %= HUD_UPDATE_MS
-      patchSnapshot({ gameTimeMs: elapsedMs.current })
+      patchSnapshot({
+        gameTimeMs: elapsedMs.current,
+        boostRemainingMs: boostRemaining.current,
+      })
     }
 
     const difficulty = getDifficulty(elapsedMs.current)
+    const remainingMs = GAME_DURATION_MS - elapsedMs.current
+    const clearingLane = remainingMs <= ARRIVAL_CLEAR_MS
+    const boosting = boostRemaining.current > 0
+    const scrollSpeed =
+      difficulty.scrollSpeed * (boosting ? BOOST_SCROLL_MULT : 1)
+
+    if (clearingLane) {
+      for (let index = 0; index < POOL_SIZE; index += 1) {
+        const slot = slots.current[index]
+        const group = groups.current[index]
+        if (!slot.active || !group) continue
+        // Sweep remaining hazards off-screen quickly, then despawn
+        group.position.y -= scrollSpeed * 2.8 * dt
+        if (group.position.y < DESPAWN_Y || remainingMs < 2500) {
+          deactivate(slot, group)
+        }
+      }
+      return
+    }
 
     if (elapsedMs.current >= SPAWN_DELAY_MS) {
       const spawnBatch = accumulateSpawns(
@@ -138,6 +180,7 @@ export function Hazards() {
         group.children[2].visible = kind === "empanada"
         group.children[3].visible = kind === "shield"
         group.children[4].visible = kind === "shield"
+        group.children[5].visible = kind === "boost"
       }
     }
 
@@ -146,17 +189,18 @@ export function Hazards() {
       const group = groups.current[index]
       if (!slot.active || !group) continue
 
-      group.position.y -= difficulty.scrollSpeed * dt
+      group.position.y -= scrollSpeed * dt
 
       if (slot.kind === "junk") {
         group.rotation.x += dt * 1.1
         group.rotation.z += dt * 0.7
       }
+      if (slot.kind === "boost") {
+        group.rotation.y += dt * 2.2
+      }
 
       if (group.position.y < DESPAWN_Y) {
-        slot.active = false
-        group.visible = false
-        group.scale.setScalar(1)
+        deactivate(slot, group)
         continue
       }
 
@@ -171,9 +215,7 @@ export function Hazards() {
         continue
       }
 
-      slot.active = false
-      group.visible = false
-      group.scale.setScalar(1)
+      deactivate(slot, group)
       const current = getSnapshot()
 
       if (slot.kind === "junk") {
@@ -187,10 +229,12 @@ export function Hazards() {
         patchSnapshot({
           screen: "gameOver",
           gameTimeMs,
+          boostRemainingMs: 0,
           achievements: checkAchievements({
             collectedMate: current.collectedMate,
             gameTimeMs,
             usedShield: current.usedShield,
+            usedBoost: current.usedBoost,
           }),
         })
         return
@@ -205,6 +249,13 @@ export function Hazards() {
       } else if (slot.kind === "empanada") {
         playSfx("collect")
         patchSnapshot({ score: current.score + SCORE_EMPANADA })
+      } else if (slot.kind === "boost") {
+        playSfx("boost")
+        boostRemaining.current = BOOST_DURATION_MS
+        patchSnapshot({
+          boostRemainingMs: BOOST_DURATION_MS,
+          usedBoost: true,
+        })
       } else {
         playSfx("shield")
         patchSnapshot({ hasShield: true })
@@ -331,6 +382,31 @@ export function Hazards() {
               opacity={0.95}
             />
           </mesh>
+
+          {/* 5: impulso / boost */}
+          <group visible={false}>
+            <mesh>
+              <octahedronGeometry args={[0.38, 0]} />
+              <meshStandardMaterial
+                color="#facc15"
+                emissive="#eab308"
+                emissiveIntensity={0.7}
+                metalness={0.2}
+                roughness={0.25}
+                flatShading
+              />
+            </mesh>
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[0.42, 0.05, 8, 20]} />
+              <meshStandardMaterial
+                color="#fef08a"
+                emissive="#facc15"
+                emissiveIntensity={0.9}
+                transparent
+                opacity={0.9}
+              />
+            </mesh>
+          </group>
         </group>
       ))}
     </group>

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { GameSession } from "@/components/game/GameSession"
 import { Hud } from "@/components/hud/Hud"
 import { MobileControls } from "@/components/hud/MobileControls"
-import { MuteButton } from "@/components/hud/MuteButton"
 import { OrientationWarning } from "@/components/hud/OrientationWarning"
 import {
   getSnapshot,
@@ -22,6 +21,7 @@ const achievementLabels: Record<AchievementId, string> = {
   first_mate: "Primer mate",
   survived_90s: "90 segundos en órbita",
   first_shield: "Escudo al rescate",
+  first_boost: "Impulso cósmico",
 }
 
 function useSessionSnapshot() {
@@ -54,7 +54,8 @@ function HomeScreen() {
             Noe al Espacio
           </h1>
           <p className="mt-3 text-slate-300">
-            Esquivá la basura espacial y alcanzá la estación.
+            Esquivá asteroides, juntá mates y usá escudo e impulso para llegar a
+            la estación.
           </p>
         </header>
 
@@ -115,38 +116,12 @@ function HomeScreen() {
   )
 }
 
-function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
-  return (
-    <section className="relative h-screen w-screen overflow-hidden bg-black">
-      <GameSession />
-      <Hud />
-
-      <button
-        type="button"
-        onClick={resetSession}
-        className="absolute bottom-4 left-4 z-20 rounded-xl border border-white/20 bg-slate-950/70 px-4 py-2 text-sm text-white backdrop-blur hover:bg-slate-800/80"
-      >
-        Volver al inicio
-      </button>
-
-      {!snapshot.launched ? (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-end justify-center pb-24 text-center text-white">
-          <div className="rounded-2xl border border-sky-400/30 bg-slate-950/80 px-7 py-5 backdrop-blur">
-            <p className="text-2xl font-black">Presioná Espacio para despegar</p>
-            <p className="mt-1 text-sm text-slate-300">
-              Luego usá las flechas o A / D para moverte
-            </p>
-          </div>
-        </div>
-      ) : null}
-    </section>
-  )
-}
-
-function EndScreen({
+function ResultCard({
   snapshot,
+  overlay,
 }: {
   snapshot: SessionSnapshot
+  overlay?: boolean
 }) {
   const submitted = useRef(false)
   const won = snapshot.screen === "win"
@@ -160,8 +135,14 @@ function EndScreen({
   }, [snapshot.score])
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5 text-center text-white">
-      <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/10 p-8 backdrop-blur">
+    <div
+      className={
+        overlay
+          ? "absolute inset-x-0 bottom-0 z-30 flex justify-center bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-6 pt-16"
+          : "flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5"
+      }
+    >
+      <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-slate-950/85 p-8 text-center text-white backdrop-blur">
         <p className="text-5xl">{won ? "🛰️" : "💥"}</p>
         <h1 className="mt-4 text-4xl font-black">
           {won ? "¡Llegaste a la estación!" : "Fin de la misión"}
@@ -219,8 +200,56 @@ function EndScreen({
           </button>
         </div>
       </div>
+    </div>
+  )
+}
+
+function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
+  const won = snapshot.screen === "win"
+  const [showWinCard, setShowWinCard] = useState(false)
+
+  useEffect(() => {
+    if (!won) {
+      setShowWinCard(false)
+      return
+    }
+    const timer = window.setTimeout(() => setShowWinCard(true), 2200)
+    return () => window.clearTimeout(timer)
+  }, [won])
+
+  return (
+    <section className="relative h-screen w-screen overflow-hidden bg-black">
+      <GameSession />
+      {!won ? <Hud /> : null}
+
+      {!won ? (
+        <button
+          type="button"
+          onClick={resetSession}
+          className="absolute bottom-4 left-4 z-20 rounded-xl border border-white/20 bg-slate-950/70 px-4 py-2 text-sm text-white backdrop-blur hover:bg-slate-800/80"
+        >
+          Volver al inicio
+        </button>
+      ) : null}
+
+      {!snapshot.launched && !won ? (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-end justify-center pb-24 text-center text-white">
+          <div className="rounded-2xl border border-sky-400/30 bg-slate-950/80 px-7 py-5 backdrop-blur">
+            <p className="text-2xl font-black">Presioná Espacio para despegar</p>
+            <p className="mt-1 text-sm text-slate-300">
+              Luego usá las flechas o A / D · juntá 🛡️ escudo y ⚡ impulso
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      {won && showWinCard ? <ResultCard snapshot={snapshot} overlay /> : null}
     </section>
   )
+}
+
+function EndScreen({ snapshot }: { snapshot: SessionSnapshot }) {
+  return <ResultCard snapshot={snapshot} />
 }
 
 export default function NoeAlEspacio() {
@@ -230,12 +259,11 @@ export default function NoeAlEspacio() {
     <main className="min-h-screen bg-black">
       {snapshot.screen === "home" || snapshot.screen === "loading" ? (
         <HomeScreen />
-      ) : snapshot.screen === "playing" ? (
+      ) : snapshot.screen === "playing" || snapshot.screen === "win" ? (
         <PlayingScreen snapshot={snapshot} />
       ) : (
         <EndScreen snapshot={snapshot} />
       )}
-      <MuteButton />
       <MobileControls />
       <OrientationWarning />
     </main>

@@ -1,4 +1,4 @@
-export type SfxName = "collect" | "hit" | "win" | "shield"
+export type SfxName = "collect" | "hit" | "win" | "shield" | "boost"
 
 const MUTE_STORAGE_KEY = "noe_v2_muted"
 
@@ -10,6 +10,7 @@ const SFX: Record<
   hit: { frequency: 110, duration: 0.2, type: "sawtooth", volume: 0.16 },
   win: { frequency: 880, duration: 0.45, type: "triangle", volume: 0.14 },
   shield: { frequency: 440, duration: 0.25, type: "square", volume: 0.1 },
+  boost: { frequency: 720, duration: 0.28, type: "triangle", volume: 0.12 },
 }
 
 let audioContext: AudioContext | null = null

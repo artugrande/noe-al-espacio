@@ -6,10 +6,13 @@ export interface SessionSnapshot {
   score: number
   gameTimeMs: number
   hasShield: boolean
+  /** Remaining impulso time in ms (0 = inactive). */
+  boostRemainingMs: number
   launched: boolean
   achievements: AchievementId[]
   collectedMate: boolean
   usedShield: boolean
+  usedBoost: boolean
   paused: boolean
 }
 
@@ -18,10 +21,12 @@ const initialSnapshot: SessionSnapshot = {
   score: 0,
   gameTimeMs: 0,
   hasShield: false,
+  boostRemainingMs: 0,
   launched: false,
   achievements: [],
   collectedMate: false,
   usedShield: false,
+  usedBoost: false,
   paused: false,
 }
 

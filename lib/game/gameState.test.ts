@@ -31,10 +31,12 @@ describe("game session state", () => {
       score: 0,
       gameTimeMs: 0,
       hasShield: false,
+      boostRemainingMs: 0,
       launched: false,
       achievements: [],
       collectedMate: false,
       usedShield: false,
+      usedBoost: false,
       paused: false,
     })
   })
