@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { GameSession } from "@/components/game/GameSession"
@@ -49,14 +50,20 @@ function HomeScreen() {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[radial-gradient(circle_at_top,#172554,#020617_55%,#000)] px-5 py-10 text-white">
       <div className="w-full max-w-4xl">
-        <header className="mb-8 text-center">
+        <header className="mb-8 flex flex-col items-center text-center">
+          <Image
+            src="/images/noe-al-espacio-logo.png"
+            alt="Noe al Espacio"
+            width={952}
+            height={1019}
+            priority
+            className="mb-4 h-auto w-[min(18rem,72vw)] drop-shadow-[0_12px_40px_rgba(56,189,248,0.35)] sm:w-[min(22rem,50vw)]"
+          />
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
             Misión Argentina
           </p>
-          <h1 className="text-5xl font-black tracking-tight sm:text-7xl">
-            Noe al Espacio
-          </h1>
-          <p className="mt-3 text-slate-300">
+          <h1 className="sr-only">Noe al Espacio</h1>
+          <p className="mt-1 max-w-xl text-slate-300">
             Esquivá oleadas, armá combos, sobreviví turbulencias e impulsos, y
             llegá a la estación.
           </p>

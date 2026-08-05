@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import { GUIDE_PAGES } from "@/lib/guide/buildGuideContent"
@@ -49,6 +50,14 @@ export function BuildGuide() {
             >
               ← Inicio
             </Link>
+            <Image
+              src="/images/noe-al-espacio-logo.png"
+              alt="Noe al Espacio"
+              width={952}
+              height={1019}
+              className="h-12 w-auto sm:h-14"
+              priority
+            />
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-300">
                 Noe al Espacio
@@ -100,6 +109,16 @@ export function BuildGuide() {
           </div>
 
           <article className="flex flex-1 flex-col rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-sky-950/40 backdrop-blur sm:p-10">
+            {page.id === "portada" ? (
+              <Image
+                src="/images/noe-al-espacio-logo.png"
+                alt="Noe al Espacio"
+                width={952}
+                height={1019}
+                className="mx-auto mb-6 h-auto w-[min(14rem,55vw)] drop-shadow-[0_10px_30px_rgba(56,189,248,0.3)]"
+                priority
+              />
+            ) : null}
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-300">
               {page.eyebrow}
             </p>
@@ -192,6 +211,15 @@ export function BuildGuide() {
                 id={item.id}
                 className="scroll-mt-24 rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-10"
               >
+                {item.id === "portada" ? (
+                  <Image
+                    src="/images/noe-al-espacio-logo.png"
+                    alt="Noe al Espacio"
+                    width={952}
+                    height={1019}
+                    className="mx-auto mb-6 h-auto w-[min(16rem,60vw)]"
+                  />
+                ) : null}
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-300">
                   {item.eyebrow}
                 </p>
