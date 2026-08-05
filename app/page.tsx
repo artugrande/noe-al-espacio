@@ -298,6 +298,7 @@ function ResultCard({
 function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
   const won = snapshot.screen === "win"
   const [showWinCard, setShowWinCard] = useState(false)
+  const [introCover, setIntroCover] = useState(true)
 
   useEffect(() => {
     if (!won) {
@@ -307,6 +308,19 @@ function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
     const timer = window.setTimeout(() => setShowWinCard(true), 2200)
     return () => window.clearTimeout(timer)
   }, [won])
+
+  // Slow black fade-in when the playfield mounts (avoids a hard pop-in).
+  useEffect(() => {
+    setIntroCover(true)
+    let inner = 0
+    const outer = window.requestAnimationFrame(() => {
+      inner = window.requestAnimationFrame(() => setIntroCover(false))
+    })
+    return () => {
+      window.cancelAnimationFrame(outer)
+      window.cancelAnimationFrame(inner)
+    }
+  }, [])
 
   return (
     <section className="relative h-screen w-screen overflow-hidden bg-black">
@@ -335,6 +349,13 @@ function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
       ) : null}
 
       {won && showWinCard ? <ResultCard snapshot={snapshot} overlay /> : null}
+
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 z-40 bg-black transition-opacity duration-[1800ms] ease-out ${
+          introCover ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </section>
   )
 }
