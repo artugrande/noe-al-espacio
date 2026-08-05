@@ -30,11 +30,15 @@ export function checkAchievements(input: {
   gameTimeMs: number
   usedShield: boolean
   usedBoost?: boolean
+  reachedCombo4?: boolean
+  objectiveDone?: boolean
 }): AchievementId[] {
   const out: AchievementId[] = []
   if (input.collectedMate) out.push("first_mate")
   if (input.gameTimeMs >= 90_000) out.push("survived_90s")
   if (input.usedShield) out.push("first_shield")
   if (input.usedBoost) out.push("first_boost")
+  if (input.reachedCombo4) out.push("combo_x4")
+  if (input.objectiveDone) out.push("mate_objective")
   return out
 }

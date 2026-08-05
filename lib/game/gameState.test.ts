@@ -7,6 +7,7 @@ import {
   subscribe,
 } from "../../components/game/gameState"
 import { input, resetInput } from "../../components/game/input"
+import { OBJECTIVE_MATES } from "./constants"
 
 describe("game session state", () => {
   beforeEach(() => {
@@ -32,11 +33,18 @@ describe("game session state", () => {
       gameTimeMs: 0,
       hasShield: false,
       boostRemainingMs: 0,
+      turbulenceMs: 0,
+      comboCount: 0,
+      comboMult: 1,
+      matesCollected: 0,
+      objectiveTarget: OBJECTIVE_MATES,
+      objectiveDone: false,
       launched: false,
       achievements: [],
       collectedMate: false,
       usedShield: false,
       usedBoost: false,
+      reachedCombo4: false,
       paused: false,
     })
   })

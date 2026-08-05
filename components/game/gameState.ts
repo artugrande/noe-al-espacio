@@ -1,4 +1,5 @@
 import type { AchievementId, GameScreen } from "@/lib/game/types"
+import { OBJECTIVE_MATES } from "@/lib/game/constants"
 import { resetInput } from "./input"
 
 export interface SessionSnapshot {
@@ -8,11 +9,19 @@ export interface SessionSnapshot {
   hasShield: boolean
   /** Remaining impulso time in ms (0 = inactive). */
   boostRemainingMs: number
+  /** Remaining turbulence time in ms. */
+  turbulenceMs: number
+  comboCount: number
+  comboMult: number
+  matesCollected: number
+  objectiveTarget: number
+  objectiveDone: boolean
   launched: boolean
   achievements: AchievementId[]
   collectedMate: boolean
   usedShield: boolean
   usedBoost: boolean
+  reachedCombo4: boolean
   paused: boolean
 }
 
@@ -22,11 +31,18 @@ const initialSnapshot: SessionSnapshot = {
   gameTimeMs: 0,
   hasShield: false,
   boostRemainingMs: 0,
+  turbulenceMs: 0,
+  comboCount: 0,
+  comboMult: 1,
+  matesCollected: 0,
+  objectiveTarget: OBJECTIVE_MATES,
+  objectiveDone: false,
   launched: false,
   achievements: [],
   collectedMate: false,
   usedShield: false,
   usedBoost: false,
+  reachedCombo4: false,
   paused: false,
 }
 

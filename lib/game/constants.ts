@@ -6,6 +6,8 @@ export const MAX_SPAWN_CHANCE = 0.11
 export const MAX_SCROLL_SPEED = 3.8
 export const SCORE_MATE = 10
 export const SCORE_EMPANADA = 15
+export const SCORE_NEAR_MISS = 5
+export const SCORE_OBJECTIVE_BONUS = 50
 export const HIGH_SCORES_KEY = "noe_v2_high_scores"
 export const HIGH_SCORES_LIMIT = 5
 /** Player hitbox — matches compact white rocket. */
@@ -13,6 +15,8 @@ export const PLAYER_RADIUS = 0.32
 /** Default junk radius — pickups use larger collect radii in Hazards. */
 export const HAZARD_RADIUS = 0.22
 export const PICKUP_RADIUS = 0.42
+/** Near-miss ring outside the hitbox (2D). */
+export const NEAR_MISS_PADDING = 0.55
 /** Wider lane so movement reaches near the screen edges. */
 export const PLAY_X_MIN = -6.8
 export const PLAY_X_MAX = 6.8
@@ -30,3 +34,12 @@ export const BOOST_DURATION_MS = 5_000
 export const BOOST_SCROLL_MULT = 2.65
 /** Slight spawn bump during impulso so the lane stays dense. */
 export const BOOST_SPAWN_MULT = 1.55
+/** Secondary objective: mates to collect in one run. */
+export const OBJECTIVE_MATES = 5
+/** Turbulence windows. */
+export const TURBULENCE_DURATION_MS = 4_000
+export const TURBULENCE_GAP_MS = 28_000
+export const TURBULENCE_FORCE = 3.2
+/** Chance each spawn batch becomes a formation (after delay). */
+export const FORMATION_CHANCE = 0.14
+export const FORMATION_COOLDOWN_MS = 12_000

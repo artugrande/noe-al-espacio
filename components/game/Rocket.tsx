@@ -3,6 +3,7 @@
 import { useFrame } from "@react-three/fiber"
 import { useRef, useSyncExternalStore } from "react"
 import type { Group, Mesh } from "three"
+import { TURBULENCE_FORCE } from "@/lib/game/constants"
 import { getSnapshot, subscribe } from "./gameState"
 import { clampX, input } from "./input"
 import { playerPos } from "./playerRef"
@@ -26,12 +27,17 @@ export function Rocket({ launched }: { launched: boolean }) {
     () => getSnapshot().boostRemainingMs > 0,
     () => false,
   )
+  const inTurbulence = useSyncExternalStore(
+    subscribe,
+    () => getSnapshot().turbulenceMs > 0,
+    () => false,
+  )
 
   useFrame((state, dt) => {
     const rocket = ref.current
     if (!rocket) return
 
-    const { screen } = getSnapshot()
+    const { screen, turbulenceMs } = getSnapshot()
     const won = screen === "win"
 
     if (won) {
@@ -39,11 +45,22 @@ export function Rocket({ launched }: { launched: boolean }) {
       rocket.position.y += (-0.35 - rocket.position.y) * Math.min(1, dt * 2.4)
       rocket.rotation.z += (0 - rocket.rotation.z) * Math.min(1, dt * 4)
     } else if (launched) {
-      // Impulso speeds hazards, not the ship — stay sharp and dodge.
-      rocket.position.x = clampX(
-        rocket.position.x + input.axisX() * MOVE_SPEED * dt,
-      )
-      rocket.rotation.z = -input.axisX() * 0.14
+      let axis = input.axisX()
+      if (turbulenceMs > 0) {
+        const t = state.clock.elapsedTime
+        axis += Math.sin(t * 9.5) * 0.55 + Math.sin(t * 17.0) * 0.35
+        rocket.position.x = clampX(
+          rocket.position.x +
+            axis * MOVE_SPEED * dt +
+            Math.sin(t * 11) * TURBULENCE_FORCE * dt * 0.35,
+        )
+        rocket.rotation.z = -axis * 0.22
+      } else {
+        rocket.position.x = clampX(
+          rocket.position.x + axis * MOVE_SPEED * dt,
+        )
+        rocket.rotation.z = -axis * 0.14
+      }
     } else {
       rocket.rotation.z = 0
     }
@@ -200,6 +217,19 @@ export function Rocket({ launched }: { launched: boolean }) {
             emissiveIntensity={1.1}
             transparent
             opacity={0.85}
+          />
+        </mesh>
+      ) : null}
+
+      {inTurbulence ? (
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.62, 0.03, 8, 20]} />
+          <meshStandardMaterial
+            color="#c4b5fd"
+            emissive="#8b5cf6"
+            emissiveIntensity={0.9}
+            transparent
+            opacity={0.7}
           />
         </mesh>
       ) : null}

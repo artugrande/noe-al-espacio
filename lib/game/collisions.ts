@@ -29,3 +29,9 @@ export function circlesOverlap2D(
   const r = radiusA + radiusB
   return dx * dx + dy * dy <= r * r
 }
+
+export function distance2D(a: Vec3, b: Vec3): number {
+  const dx = a.x - b.x
+  const dy = a.y - b.y
+  return Math.hypot(dx, dy)
+}

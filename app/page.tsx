@@ -22,6 +22,8 @@ const achievementLabels: Record<AchievementId, string> = {
   survived_90s: "90 segundos en órbita",
   first_shield: "Escudo al rescate",
   first_boost: "Sobreviví el impulso",
+  combo_x4: "Combo x4",
+  mate_objective: "5 mates en una misión",
 }
 
 function useSessionSnapshot() {
@@ -54,8 +56,8 @@ function HomeScreen() {
             Noe al Espacio
           </h1>
           <p className="mt-3 text-slate-300">
-            Esquivá asteroides, juntá mates y usá escudo e impulso para llegar a
-            la estación.
+            Esquivá oleadas, armá combos, sobreviví turbulencias e impulsos, y
+            llegá a la estación.
           </p>
         </header>
 
@@ -237,7 +239,7 @@ function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
           <div className="rounded-2xl border border-sky-400/30 bg-slate-950/80 px-7 py-5 backdrop-blur">
             <p className="text-2xl font-black">Presioná Espacio para despegar</p>
             <p className="mt-1 text-sm text-slate-300">
-              Flechas o A / D · 🛡️ escudo te salva · ⚡ impulso acelera todo
+              A/D · 🛡️ escudo · ⚡ impulso · 🧉 meta · near-miss suma combo
             </p>
           </div>
         </div>
