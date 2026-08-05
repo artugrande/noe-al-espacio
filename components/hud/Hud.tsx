@@ -38,10 +38,16 @@ export function Hud() {
             {snapshot.hasShield ? "🛡️ Activo" : "—"}
           </p>
         </div>
-        <div className="rounded-xl border border-amber-400/30 bg-slate-950/70 px-4 py-2 text-right backdrop-blur">
+        <div
+          className={`rounded-xl border px-4 py-2 text-right backdrop-blur ${
+            snapshot.boostRemainingMs > 0
+              ? "border-amber-400/70 bg-amber-500/25 animate-pulse"
+              : "border-amber-400/30 bg-slate-950/70"
+          }`}
+        >
           <p className="text-xs uppercase tracking-wider text-slate-400">Impulso</p>
           <p className="text-xl font-black text-amber-300">
-            {snapshot.boostRemainingMs > 0 ? `⚡ ${boostSeconds}s` : "—"}
+            {snapshot.boostRemainingMs > 0 ? `⚡ ¡RÁPIDO! ${boostSeconds}s` : "—"}
           </p>
         </div>
       </div>

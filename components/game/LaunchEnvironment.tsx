@@ -14,17 +14,17 @@ function clamp01(value: number) {
   return Math.min(1, Math.max(0, value))
 }
 
-/** Cape Canaveral–inspired palette: celeste sky → space. */
+/** Celeste sky → space. No brown / dark-blue horizon bands. */
 const skyGround = new Color("#7ec8f0")
-const skyMid = new Color("#4fa3d8")
+const skyMid = new Color("#5eb0e0")
 const skySpace = new Color("#020617")
 
-/** Coastal wetlands launch complex → fade into deep space. */
+/** Green launch pad + hills under a clean celeste sky. */
 export function LaunchEnvironment() {
   const worldRef = useRef<Group>(null)
   const padRef = useRef<Mesh>(null)
   const starsGroup = useRef<Group>(null)
-  const bg = useRef(skyMid.clone())
+  const bg = useRef(skyGround.clone())
   const scrollY = useRef(0)
 
   const scrub = useMemo(
@@ -44,8 +44,6 @@ export function LaunchEnvironment() {
         [4.8, -1.2, 0.7],
         [-6.0, 0.8, 0.6],
         [6.2, 0.5, 0.65],
-        [-0.8, 3.2, 0.45],
-        [0.6, 3.0, 0.5],
       ].map(([x, z, s]) => ({ x, z, s })),
     [],
   )
@@ -53,18 +51,18 @@ export function LaunchEnvironment() {
   const hills = useMemo(
     () =>
       [
-        [-6.2, -4.5, 1.3],
-        [-4.0, -5.2, 1.6],
-        [-1.8, -4.8, 1.2],
-        [0.4, -5.5, 1.5],
-        [2.6, -4.6, 1.35],
-        [4.8, -5.3, 1.55],
-        [6.5, -4.9, 1.2],
-        [-5.0, -6.8, 1.8],
-        [-2.2, -7.2, 1.5],
-        [1.2, -6.6, 1.9],
-        [3.8, -7.0, 1.6],
-        [5.8, -6.5, 1.7],
+        [-6.2, -3.8, 1.3],
+        [-4.0, -4.4, 1.6],
+        [-1.8, -4.0, 1.2],
+        [0.4, -4.6, 1.5],
+        [2.6, -3.9, 1.35],
+        [4.8, -4.5, 1.55],
+        [6.5, -4.1, 1.2],
+        [-5.0, -5.8, 1.7],
+        [-2.2, -6.2, 1.45],
+        [1.2, -5.6, 1.8],
+        [3.8, -6.0, 1.5],
+        [5.8, -5.5, 1.6],
       ].map(([x, z, s]) => ({ x, z, s })),
     [],
   )
@@ -100,11 +98,11 @@ export function LaunchEnvironment() {
       })
     }
 
-    if (atmosphere < 0.4) {
-      const u = atmosphere / 0.4
+    if (atmosphere < 0.45) {
+      const u = atmosphere / 0.45
       bg.current.copy(skyGround).lerp(skyMid, u)
     } else {
-      const u = (atmosphere - 0.4) / 0.6
+      const u = (atmosphere - 0.45) / 0.55
       bg.current.copy(skyMid).lerp(skySpace, u)
     }
     state.scene.background = bg.current
@@ -150,40 +148,10 @@ export function LaunchEnvironment() {
       </group>
 
       <group ref={worldRef}>
-        {/* Ocean horizon — vertical so the line stays straight */}
-        <mesh position={[0, -1.35, -9]}>
-          <planeGeometry args={[100, 3.6]} />
-          <meshStandardMaterial color="#1e5f8a" roughness={0.3} metalness={0.1} />
-        </mesh>
-
-        {/* Wetland / green coastal ground */}
-        <mesh position={[0, -2.2, 1.2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[28, 10]} />
+        {/* One continuous green ground — no ocean / shore bands that split on scroll */}
+        <mesh position={[0, -2.2, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[40, 22]} />
           <meshStandardMaterial color="#3d8c4e" roughness={0.95} flatShading />
-        </mesh>
-        <mesh position={[0, -2.18, -2.2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[30, 6]} />
-          <meshStandardMaterial color="#4a9d5c" roughness={0.95} flatShading />
-        </mesh>
-
-        {/* Shore strip in front of ocean */}
-        <mesh position={[0, -2.5, -8.5]}>
-          <planeGeometry args={[100, 1.4]} />
-          <meshStandardMaterial color="#2f7a42" roughness={0.95} flatShading />
-        </mesh>
-
-        {/* Water lagoon patches */}
-        <mesh position={[-3.2, -2.12, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[1.1, 16]} />
-          <meshStandardMaterial color="#2563a8" roughness={0.25} metalness={0.2} />
-        </mesh>
-        <mesh position={[3.6, -2.12, -0.8]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[0.85, 16]} />
-          <meshStandardMaterial color="#1d4e89" roughness={0.25} metalness={0.2} />
-        </mesh>
-        <mesh position={[1.2, -2.12, 2.4]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[0.55, 14]} />
-          <meshStandardMaterial color="#2a6fad" roughness={0.25} metalness={0.2} />
         </mesh>
 
         {/* Concrete apron + pad */}
@@ -206,7 +174,7 @@ export function LaunchEnvironment() {
           />
         </mesh>
 
-        {/* Hangar / processing building */}
+        {/* Hangar */}
         <mesh position={[-4.2, -1.35, 1.8]}>
           <boxGeometry args={[2.4, 1.4, 1.6]} />
           <meshStandardMaterial color="#d1d5db" roughness={0.7} metalness={0.1} flatShading />
@@ -220,7 +188,7 @@ export function LaunchEnvironment() {
           <meshStandardMaterial color="#e5e7eb" roughness={0.5} />
         </mesh>
 
-        {/* Small utility buildings */}
+        {/* Small buildings */}
         <mesh position={[4.5, -1.7, 1.5]}>
           <boxGeometry args={[1.2, 0.7, 0.9]} />
           <meshStandardMaterial color="#e7e5e4" roughness={0.75} flatShading />
@@ -228,24 +196,6 @@ export function LaunchEnvironment() {
         <mesh position={[5.4, -1.85, 0.2]}>
           <boxGeometry args={[0.7, 0.4, 0.7]} />
           <meshStandardMaterial color="#f5f5f4" roughness={0.8} flatShading />
-        </mesh>
-
-        {/* Lightning masts */}
-        <mesh position={[-2.2, -0.55, -0.3]}>
-          <cylinderGeometry args={[0.04, 0.05, 3.0, 6]} />
-          <meshStandardMaterial color="#64748b" metalness={0.6} roughness={0.35} />
-        </mesh>
-        <mesh position={[2.2, -0.55, -0.3]}>
-          <cylinderGeometry args={[0.04, 0.05, 3.0, 6]} />
-          <meshStandardMaterial color="#64748b" metalness={0.6} roughness={0.35} />
-        </mesh>
-        <mesh position={[-2.2, 0.95, -0.3]}>
-          <coneGeometry args={[0.12, 0.25, 6]} />
-          <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.4} />
-        </mesh>
-        <mesh position={[2.2, 0.95, -0.3]}>
-          <coneGeometry args={[0.12, 0.25, 6]} />
-          <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.4} />
         </mesh>
 
         {/* Service tower / crew access bridge */}
@@ -270,7 +220,6 @@ export function LaunchEnvironment() {
           <meshStandardMaterial color="#94a3b8" metalness={0.45} roughness={0.45} />
         </mesh>
 
-        {/* Green scrub / mangroves */}
         {scrub.map((b, i) => (
           <group key={`scrub-${i}`} position={[b.x, -2.05, b.z]} scale={b.s}>
             <mesh position={[0, 0.18, 0]}>
@@ -284,7 +233,6 @@ export function LaunchEnvironment() {
           </group>
         ))}
 
-        {/* Soft green hills in the distance */}
         {hills.map((h, i) => (
           <mesh
             key={`hill-${i}`}
@@ -292,7 +240,7 @@ export function LaunchEnvironment() {
             scale={[h.s, h.s * 0.42, h.s]}
           >
             <coneGeometry args={[1.0, 0.8, 5]} />
-            <meshStandardMaterial color="#4d8f58" flatShading roughness={1} />
+            <meshStandardMaterial color="#2f6b3a" flatShading roughness={1} />
           </mesh>
         ))}
       </group>

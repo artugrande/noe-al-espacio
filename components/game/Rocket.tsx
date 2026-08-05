@@ -3,7 +3,6 @@
 import { useFrame } from "@react-three/fiber"
 import { useRef, useSyncExternalStore } from "react"
 import type { Group, Mesh } from "three"
-import { BOOST_MOVE_MULT } from "@/lib/game/constants"
 import { getSnapshot, subscribe } from "./gameState"
 import { clampX, input } from "./input"
 import { playerPos } from "./playerRef"
@@ -32,20 +31,19 @@ export function Rocket({ launched }: { launched: boolean }) {
     const rocket = ref.current
     if (!rocket) return
 
-    const { screen, boostRemainingMs } = getSnapshot()
+    const { screen } = getSnapshot()
     const won = screen === "win"
-    const speed =
-      MOVE_SPEED * (boostRemainingMs > 0 ? BOOST_MOVE_MULT : 1)
 
     if (won) {
       rocket.position.x += (0 - rocket.position.x) * Math.min(1, dt * 3.2)
       rocket.position.y += (-0.35 - rocket.position.y) * Math.min(1, dt * 2.4)
       rocket.rotation.z += (0 - rocket.rotation.z) * Math.min(1, dt * 4)
     } else if (launched) {
+      // Impulso speeds hazards, not the ship — stay sharp and dodge.
       rocket.position.x = clampX(
-        rocket.position.x + input.axisX() * speed * dt,
+        rocket.position.x + input.axisX() * MOVE_SPEED * dt,
       )
-      rocket.rotation.z = -input.axisX() * (boostRemainingMs > 0 ? 0.2 : 0.14)
+      rocket.rotation.z = -input.axisX() * 0.14
     } else {
       rocket.rotation.z = 0
     }

@@ -24,7 +24,9 @@ export const LAUNCH_SMOKE_MS = 9_000
 export const LAUNCH_SCROLL_SPEED = 1.35
 /** Clear lane before docking: stop spawns + remove hazards. */
 export const ARRIVAL_CLEAR_MS = 4_000
-/** Impulso power-up duration. */
+/** Impulso: 5s rush — asteroids fall much faster (challenge window). */
 export const BOOST_DURATION_MS = 5_000
-export const BOOST_MOVE_MULT = 1.7
-export const BOOST_SCROLL_MULT = 0.72
+/** Scroll multiplier while impulso is active (must feel intense). */
+export const BOOST_SCROLL_MULT = 2.65
+/** Slight spawn bump during impulso so the lane stays dense. */
+export const BOOST_SPAWN_MULT = 1.55

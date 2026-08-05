@@ -10,6 +10,7 @@ import {
   ARRIVAL_CLEAR_MS,
   BOOST_DURATION_MS,
   BOOST_SCROLL_MULT,
+  BOOST_SPAWN_MULT,
   GAME_DURATION_MS,
   HAZARD_RADIUS,
   PICKUP_RADIUS,
@@ -132,6 +133,8 @@ export function Hazards() {
     const boosting = boostRemaining.current > 0
     const scrollSpeed =
       difficulty.scrollSpeed * (boosting ? BOOST_SCROLL_MULT : 1)
+    const spawnChance =
+      difficulty.spawnChance * (boosting ? BOOST_SPAWN_MULT : 1)
 
     if (clearingLane) {
       for (let index = 0; index < POOL_SIZE; index += 1) {
@@ -150,7 +153,7 @@ export function Hazards() {
     if (elapsedMs.current >= SPAWN_DELAY_MS) {
       const spawnBatch = accumulateSpawns(
         spawnAccumulator.current,
-        difficulty.spawnChance,
+        spawnChance,
         dt,
       )
       spawnAccumulator.current = spawnBatch.remainder
