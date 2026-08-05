@@ -6,7 +6,7 @@ describe("getDifficulty", () => {
   it("starts at baseline at t=0", () => {
     const d = getDifficulty(0)
     expect(d.spawnChance).toBeCloseTo(0.03, 3)
-    expect(d.scrollSpeed).toBeCloseTo(0.8, 3)
+    expect(d.scrollSpeed).toBeCloseTo(1.55, 3)
   })
 
   it("increases spawn and speed by mid-game", () => {

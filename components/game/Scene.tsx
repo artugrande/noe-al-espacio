@@ -1,5 +1,6 @@
 "use client"
 
+import { Billboard, useTexture } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { useRef, useSyncExternalStore } from "react"
 import type { Group } from "three"
@@ -41,13 +42,13 @@ function RocketBridge() {
 
 function SpaceStation() {
   const ref = useRef<Group>(null)
+  const texture = useTexture("/images/estacionespacial.png")
 
-  useFrame(() => {
+  useFrame((_, dt) => {
     const { screen, launched } = getSnapshot()
     const group = ref.current
     if (!group) return
 
-    // Fade ISS in during the last stretch (like v1)
     const appearStart = GAME_DURATION_MS - 25_000
     const gameTimeMs = playClock.elapsedMs
     let opacity = 0
@@ -57,59 +58,82 @@ function SpaceStation() {
     if (screen === "win") opacity = 1
 
     group.visible = opacity > 0.02
+
+    const approach = screen === "win" ? 1 : opacity
+    const targetY = screen === "win" ? 0.35 : 2.2
+    const targetZ = screen === "win" ? -1.2 : -5.5
+    const targetScale = screen === "win" ? 7.2 : 2.4 + approach * 1.4
+
+    group.position.y += (targetY - group.position.y) * Math.min(1, dt * 2.2)
+    group.position.z += (targetZ - group.position.z) * Math.min(1, dt * 2.2)
+    const currentScale = group.scale.x
+    const nextScale = currentScale + (targetScale - currentScale) * Math.min(1, dt * 2)
+    group.scale.setScalar(nextScale)
+
     group.traverse((obj) => {
-      const mesh = obj as { isMesh?: boolean; material?: { opacity?: number; transparent?: boolean; depthWrite?: boolean } }
+      const mesh = obj as {
+        isMesh?: boolean
+        material?: {
+          opacity?: number
+          transparent?: boolean
+          depthWrite?: boolean
+        }
+      }
       if (!mesh.isMesh || !mesh.material) return
       mesh.material.transparent = true
       mesh.material.opacity = opacity
-      mesh.material.depthWrite = opacity > 0.5
+      mesh.material.depthWrite = opacity > 0.55
     })
   })
 
   return (
-    <group ref={ref} position={[0, 2.6, -6]} rotation={[0.12, 0.2, -0.08]} visible={false}>
-      <mesh>
-        <boxGeometry args={[2.2, 0.34, 0.42]} />
-        <meshStandardMaterial color="#d6d3d1" metalness={0.35} flatShading />
-      </mesh>
-      <mesh position={[-0.72, 0.38, 0]}>
-        <boxGeometry args={[0.48, 0.48, 0.48]} />
-        <meshStandardMaterial color="#a8a29e" flatShading />
-      </mesh>
-      <mesh position={[0.72, -0.36, 0]}>
-        <boxGeometry args={[0.58, 0.36, 0.36]} />
-        <meshStandardMaterial color="#e7e5e4" flatShading />
-      </mesh>
-      <mesh position={[-1.75, 0, 0]}>
-        <boxGeometry args={[1.25, 0.06, 0.72]} />
-        <meshStandardMaterial
-          color="#1d4ed8"
-          emissive="#1e40af"
-          emissiveIntensity={0.3}
-          flatShading
-        />
-      </mesh>
-      <mesh position={[1.75, 0, 0]}>
-        <boxGeometry args={[1.25, 0.06, 0.72]} />
-        <meshStandardMaterial
-          color="#1d4ed8"
-          emissive="#1e40af"
-          emissiveIntensity={0.3}
-          flatShading
-        />
-      </mesh>
+    <group ref={ref} position={[0, 2.2, -5.5]} scale={2.4} visible={false}>
+      <Billboard follow>
+        <mesh>
+          <planeGeometry args={[2.4, 2.4]} />
+          <meshBasicMaterial
+            map={texture}
+            transparent
+            depthWrite={false}
+            toneMapped={false}
+          />
+        </mesh>
+      </Billboard>
     </group>
   )
+}
+
+function HazardsBridge() {
+  const visible = useSyncExternalStore(
+    subscribe,
+    () => getSnapshot().screen === "playing",
+    () => true,
+  )
+
+  if (!visible) return null
+  return <Hazards />
+}
+
+function EffectsBridge() {
+  const screen = useSyncExternalStore(
+    subscribe,
+    () => getSnapshot().screen,
+    () => "home" as const,
+  )
+
+  if (screen === "win") return null
+  return <Effects />
 }
 
 function SunLight() {
   useFrame((state) => {
     const { launched, screen } = getSnapshot()
     const t =
-      screen === "playing" && launched
-        ? Math.min(1, playClock.elapsedMs / ATMOSPHERE_FADE_MS)
-        : 0
-    // Warm strong light on Earth, cooler/dimmer in space
+      screen === "win"
+        ? 1
+        : screen === "playing" && launched
+          ? Math.min(1, playClock.elapsedMs / ATMOSPHERE_FADE_MS)
+          : 0
     const dir = state.scene.getObjectByName("sun-light") as
       | { intensity?: number; color?: { set?: (c: string) => void } }
       | undefined
@@ -137,8 +161,8 @@ export function Scene() {
       <LaunchEnvironment />
       <LaunchController />
       <RocketBridge />
-      <Hazards />
-      <Effects />
+      <HazardsBridge />
+      <EffectsBridge />
       <SpaceStation />
     </>
   )

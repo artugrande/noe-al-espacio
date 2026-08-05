@@ -27,7 +27,8 @@ import { playerPos } from "./playerRef"
 
 const POOL_SIZE = 32
 const SPAWN_Y = 5.8
-const DESPAWN_Y = -4.2
+/** Past the bottom of the frame so hazards exit cleanly (no pop-out). */
+const DESPAWN_Y = -8.8
 const HUD_UPDATE_MS = 100
 
 interface HazardSlot {
