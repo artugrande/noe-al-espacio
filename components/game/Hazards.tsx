@@ -39,7 +39,7 @@ import {
 } from "@/lib/game/formations"
 import { accumulateSpawns } from "@/lib/game/spawning"
 import type { HazardKind, JunkVariant } from "@/lib/game/types"
-import { getSnapshot, patchSnapshot, playClock } from "./gameState"
+import { getSnapshot, patchSnapshot, playClock, showToast } from "./gameState"
 import { getMateTexture, getMedialunaTexture } from "./iconTextures"
 import { playerPos } from "./playerRef"
 
@@ -343,15 +343,15 @@ export function Hazards() {
           slot.nearMissAwarded = true
           bumpCombo()
           const current = getSnapshot()
+          const points = scoreWithCombo(SCORE_NEAR_MISS, comboCount.current)
           playSfx("collect")
           patchSnapshot({
-            score:
-              current.score +
-              scoreWithCombo(SCORE_NEAR_MISS, comboCount.current),
+            score: current.score + points,
             comboCount: comboCount.current,
             comboMult: comboMultiplier(comboCount.current),
             reachedCombo4: reachedCombo4.current,
           })
+          showToast(`¡Wow! Estuvo cerca  +${points}`)
         }
       }
 

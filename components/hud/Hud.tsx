@@ -6,6 +6,7 @@ import {
   subscribe,
 } from "@/components/game/gameState"
 import { GAME_DURATION_MS } from "@/lib/game/constants"
+import { FloatToast } from "./FloatToast"
 
 function formatTime(milliseconds: number) {
   const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000))
@@ -21,8 +22,9 @@ export function Hud() {
   const turbSeconds = Math.ceil(snapshot.turbulenceMs / 1000)
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 text-white">
-      <div className="flex items-start justify-between gap-3">
+    <div className="pointer-events-none absolute inset-0 z-10 text-white">
+      <FloatToast />
+      <div className="flex items-start justify-between gap-3 p-4">
         <div className="flex flex-col gap-2">
           <div className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-2 backdrop-blur">
             <p className="text-xs uppercase tracking-wider text-slate-400">

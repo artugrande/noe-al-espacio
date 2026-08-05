@@ -2,6 +2,11 @@ import type { AchievementId, GameScreen } from "@/lib/game/types"
 import { OBJECTIVE_MATES } from "@/lib/game/constants"
 import { resetInput } from "./input"
 
+export interface FloatToast {
+  id: number
+  message: string
+}
+
 export interface SessionSnapshot {
   screen: GameScreen
   score: number
@@ -16,6 +21,8 @@ export interface SessionSnapshot {
   matesCollected: number
   objectiveTarget: number
   objectiveDone: boolean
+  /** Short popup (near-miss, etc). */
+  toast: FloatToast | null
   launched: boolean
   achievements: AchievementId[]
   collectedMate: boolean
@@ -37,6 +44,7 @@ const initialSnapshot: SessionSnapshot = {
   matesCollected: 0,
   objectiveTarget: OBJECTIVE_MATES,
   objectiveDone: false,
+  toast: null,
   launched: false,
   achievements: [],
   collectedMate: false,
@@ -47,6 +55,7 @@ const initialSnapshot: SessionSnapshot = {
 }
 
 let snapshot: SessionSnapshot = initialSnapshot
+let toastSeq = 0
 
 /** High-frequency clock for atmosphere / VFX (not React state). */
 export const playClock = { elapsedMs: 0 }
@@ -60,6 +69,12 @@ export function getSnapshot() {
 export function patchSnapshot(patch: Partial<SessionSnapshot>) {
   snapshot = { ...snapshot, ...patch }
   listeners.forEach((listener) => listener())
+}
+
+/** Show a short HUD popup (near-miss, etc). */
+export function showToast(message: string) {
+  toastSeq += 1
+  patchSnapshot({ toast: { id: toastSeq, message } })
 }
 
 export function subscribe(listener: () => void) {

@@ -39,6 +39,7 @@ describe("game session state", () => {
       matesCollected: 0,
       objectiveTarget: OBJECTIVE_MATES,
       objectiveDone: false,
+      toast: null,
       launched: false,
       achievements: [],
       collectedMate: false,

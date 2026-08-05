@@ -287,6 +287,29 @@
   }
 }
 
+@keyframes noe-float-toast {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.98);
+  }
+}
+
+.noe-float-toast {
+  animation: noe-float-toast 1.4s ease-out both;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
