@@ -31,9 +31,23 @@ export const input = {
   },
 }
 
+const SCROLL_KEYS = new Set([
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown",
+  "Space",
+  "PageUp",
+  "PageDown",
+  "Home",
+  "End",
+])
+
 export function bindKeyboard() {
   const down = (e: KeyboardEvent) => {
     void unlock()
+    // Keep the playfield fixed — arrows/space move the rocket, not the page.
+    if (SCROLL_KEYS.has(e.code)) e.preventDefault()
     if (e.code === "ArrowLeft" || e.code === "KeyA") input.setLeft(true)
     if (e.code === "ArrowRight" || e.code === "KeyD") input.setRight(true)
     if (e.code === "Space") input.pressLaunch()
@@ -42,7 +56,7 @@ export function bindKeyboard() {
     if (e.code === "ArrowLeft" || e.code === "KeyA") input.setLeft(false)
     if (e.code === "ArrowRight" || e.code === "KeyD") input.setRight(false)
   }
-  window.addEventListener("keydown", down)
+  window.addEventListener("keydown", down, { passive: false })
   window.addEventListener("keyup", up)
   return () => {
     window.removeEventListener("keydown", down)

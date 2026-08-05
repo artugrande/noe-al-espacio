@@ -363,9 +363,26 @@ function EndScreen({ snapshot }: { snapshot: SessionSnapshot }) {
 
 export default function NoeAlEspacio() {
   const snapshot = useSessionSnapshot()
+  const inGame =
+    snapshot.screen === "playing" ||
+    snapshot.screen === "win" ||
+    snapshot.screen === "gameOver"
+
+  useEffect(() => {
+    if (!inGame) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [inGame])
 
   return (
-    <main className="min-h-screen overflow-y-auto bg-black">
+    <main
+      className={`min-h-screen bg-black ${
+        inGame ? "h-screen overflow-hidden" : "overflow-y-auto"
+      }`}
+    >
       {snapshot.screen === "home" || snapshot.screen === "loading" ? (
         <HomeScreen />
       ) : snapshot.screen === "playing" || snapshot.screen === "win" ? (
