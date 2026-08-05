@@ -2,11 +2,13 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useRef, useState, useSyncExternalStore } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
 import { GameSession } from "@/components/game/GameSession"
 import { Hud } from "@/components/hud/Hud"
+import { LeaderboardPanel } from "@/components/hud/LeaderboardPanel"
 import { MobileControls } from "@/components/hud/MobileControls"
 import { OrientationWarning } from "@/components/hud/OrientationWarning"
+import { ScorePublishForm } from "@/components/hud/ScorePublishForm"
 import {
   getSnapshot,
   resetSession,
@@ -16,8 +18,8 @@ import {
 } from "@/components/game/gameState"
 import { unlock } from "@/lib/game/audio"
 import { pickCuriosity } from "@/lib/game/curiosidades"
-import { loadHighScores, submitScore } from "@/lib/game/scores"
-import type { AchievementId } from "@/lib/game/types"
+import { fetchLeaderboard } from "@/lib/game/scores"
+import type { AchievementId, HighScoreEntry } from "@/lib/game/types"
 
 const achievementLabels: Record<AchievementId, string> = {
   first_mate: "Primer mate",
@@ -40,12 +42,22 @@ function startWithAudio() {
 
 function HomeScreen() {
   const [curiosity, setCuriosity] = useState(() => pickCuriosity(0))
-  const [highScores, setHighScores] =
-    useState<ReturnType<typeof loadHighScores>>([])
+  const [highScores, setHighScores] = useState<HighScoreEntry[]>([])
+  const [globalBoard, setGlobalBoard] = useState(false)
+  const [loadingScores, setLoadingScores] = useState(true)
 
   useEffect(() => {
     setCuriosity(pickCuriosity(Date.now()))
-    setHighScores(loadHighScores())
+    let cancelled = false
+    void fetchLeaderboard().then((result) => {
+      if (cancelled) return
+      setHighScores(result.scores)
+      setGlobalBoard(result.global)
+      setLoadingScores(false)
+    })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return (
@@ -90,24 +102,11 @@ function HomeScreen() {
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-            <h2 className="text-xl font-bold text-amber-300">
-              🏆 Mejores puntajes
-            </h2>
-            {highScores.length > 0 ? (
-              <ol className="mt-4 space-y-2">
-                {highScores.map((entry, index) => (
-                  <li
-                    key={`${entry.at}-${index}`}
-                    className="flex justify-between rounded-xl bg-black/20 px-4 py-3"
-                  >
-                    <span>#{index + 1}</span>
-                    <strong>{entry.score} puntos</strong>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="mt-5 text-slate-300">¡Sé la primera persona en jugar!</p>
-            )}
+            <LeaderboardPanel
+              scores={highScores}
+              global={globalBoard}
+              loading={loadingScores}
+            />
           </div>
         </div>
 
@@ -163,23 +162,14 @@ function ResultCard({
   snapshot: SessionSnapshot
   overlay?: boolean
 }) {
-  const submitted = useRef(false)
   const won = snapshot.screen === "win"
-  const [highScores, setHighScores] =
-    useState<ReturnType<typeof loadHighScores>>([])
-
-  useEffect(() => {
-    if (submitted.current) return
-    setHighScores(submitScore(snapshot.score))
-    submitted.current = true
-  }, [snapshot.score])
 
   if (won) {
     return (
       <div
         className={
           overlay
-            ? "absolute inset-0 z-30 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
+            ? "absolute inset-0 z-30 flex items-center justify-center overflow-y-auto bg-black/70 px-4 py-6 backdrop-blur-sm"
             : "flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5 py-8"
         }
       >
@@ -195,7 +185,7 @@ function ResultCard({
             />
           </div>
 
-          <div className="flex flex-col justify-center p-6 text-center sm:p-8 md:text-left">
+          <div className="flex max-h-[85vh] flex-col justify-center overflow-y-auto p-6 text-center sm:p-8 md:text-left">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-300">
               Misión cumplida
             </p>
@@ -229,6 +219,8 @@ function ResultCard({
               </ul>
             ) : null}
 
+            <ScorePublishForm score={snapshot.score} align="left" />
+
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <button
                 type="button"
@@ -252,7 +244,7 @@ function ResultCard({
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5">
+    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5 py-8">
       <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-slate-950/85 p-8 text-center text-white backdrop-blur">
         <p className="text-5xl">💥</p>
         <h1 className="mt-4 text-4xl font-black">Fin de la misión</h1>
@@ -277,20 +269,7 @@ function ResultCard({
           </div>
         ) : null}
 
-        <div className="mt-6">
-          <h2 className="font-bold text-amber-300">🏆 Mejores puntajes</h2>
-          <ol className="mt-3 space-y-2">
-            {highScores.map((entry, index) => (
-              <li
-                key={`${entry.at}-${index}`}
-                className="flex justify-between rounded-xl bg-black/20 px-4 py-2 text-sm"
-              >
-                <span>#{index + 1}</span>
-                <strong>{entry.score} puntos</strong>
-              </li>
-            ))}
-          </ol>
-        </div>
+        <ScorePublishForm score={snapshot.score} />
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           <button

@@ -26,6 +26,8 @@ export interface Difficulty {
 }
 
 export interface HighScoreEntry {
+  name: string
   score: number
   at: string // ISO date
+  id?: string
 }

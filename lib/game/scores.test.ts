@@ -14,10 +14,13 @@ describe("scores", () => {
   it("starts empty", () => {
     expect(loadHighScores()).toEqual([])
   })
-  it("keeps top 5 descending", () => {
-    for (const s of [10, 50, 20, 40, 30, 60]) submitScore(s)
+  it("keeps top 10 descending with names", () => {
+    for (const s of [10, 50, 20, 40, 30, 60, 5, 70, 15, 25, 80]) {
+      submitScore(s, "Piloto")
+    }
     const scores = loadHighScores().map((e) => e.score)
-    expect(scores).toEqual([60, 50, 40, 30, 20])
+    expect(scores).toEqual([80, 70, 60, 50, 40, 30, 25, 20, 15, 10])
+    expect(loadHighScores()[0]?.name).toBe("Piloto")
     expect(localStorage.getItem(HIGH_SCORES_KEY)).toBeTruthy()
   })
 })

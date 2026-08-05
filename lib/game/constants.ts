@@ -9,7 +9,8 @@ export const SCORE_EMPANADA = 15
 export const SCORE_NEAR_MISS = 5
 export const SCORE_OBJECTIVE_BONUS = 50
 export const HIGH_SCORES_KEY = "noe_v2_high_scores"
-export const HIGH_SCORES_LIMIT = 5
+/** Top N shown on home + result screens (global Redis / local fallback). */
+export const HIGH_SCORES_LIMIT = 10
 /** Player hitbox — matches compact white rocket. */
 export const PLAYER_RADIUS = 0.32
 /** Default junk radius — pickups use larger collect radii in Hazards. */

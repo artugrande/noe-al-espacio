@@ -43,7 +43,17 @@ npm run dev
 
 Abrí **http://localhost:3000** en el navegador.
 
-### 4. Abrirlo en Cursor
+### 4. Ranking global (opcional, Upstash Redis)
+
+Sin Redis el juego funciona igual, pero el leaderboard queda solo en ese dispositivo.
+
+1. Creá una base **Upstash Redis** (gratis) en [console.upstash.com](https://console.upstash.com) o desde Vercel → Storage.
+2. Copiá `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` a `.env.local` (ver `.env.example`).
+3. En Vercel: Project → Settings → Environment Variables → las mismas dos vars → Redeploy.
+
+Al terminar una partida podés escribir tu nombre y publicar el puntaje en el ranking global.
+
+### 5. Abrirlo en Cursor
 
 `File → Open Folder` → elegí la carpeta `noe-al-espacio`.
 
