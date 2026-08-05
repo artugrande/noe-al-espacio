@@ -215,8 +215,8 @@ export function BuildGuide() {
                   <Image
                     src="/images/noe-al-espacio-logo.png"
                     alt="Noe al Espacio"
-                    width={952}
-                    height={1019}
+                    width={926}
+                    height={1046}
                     className="mx-auto mb-6 h-auto w-[min(16rem,60vw)]"
                   />
                 ) : null}
