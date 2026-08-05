@@ -32,24 +32,14 @@ export async function GET(request: Request) {
   }
 
   try {
-    const { error: readError } = await supabase
-      .from("leaderboard")
-      .select("id")
-      .limit(1)
-
-    if (readError) throw readError
-
-    // Write touch so the free project stays warm even with 0 scores.
-    const { error: writeError } = await supabase.from("keepalive").upsert(
-      { id: 1, last_ping: new Date().toISOString() },
-      { onConflict: "id" },
-    )
+    // Daily SELECT is enough to keep the free project from pausing.
+    const { error } = await supabase.from("leaderboard").select("id").limit(1)
+    if (error) throw error
 
     return NextResponse.json({
       ok: true,
       at: new Date().toISOString(),
       project: "noe-al-espacio",
-      wroteHeartbeat: !writeError,
     })
   } catch (error) {
     console.error("GET /api/keepalive", error)

@@ -29,21 +29,3 @@ create policy "Public insert leaderboard"
     and score <= 1000000
   );
 
--- Tiny heartbeat table so the project stays warm even with 0 scores.
-create table if not exists public.keepalive (
-  id int primary key,
-  last_ping timestamptz not null default now()
-);
-
-alter table public.keepalive enable row level security;
-
-drop policy if exists "Public upsert keepalive" on public.keepalive;
-create policy "Public upsert keepalive"
-  on public.keepalive for all
-  to anon, authenticated
-  using (true)
-  with check (true);
-
-insert into public.keepalive (id, last_ping)
-values (1, now())
-on conflict (id) do nothing;
