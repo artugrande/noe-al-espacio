@@ -463,6 +463,59 @@ export const GUIDE_PAGES: GuidePage[] = [
     ],
   },
   {
+    id: "assets-prompts",
+    eyebrow: "Arte y música",
+    title: "Prompts del soundtrack y del logo",
+    subtitle:
+      "El juego no solo se codea: también se diseña con IA. Estos fueron los prompts reales que usamos.",
+    blocks: [
+      {
+        type: "p",
+        text: "Beyond the Blue Dust (el loop que suena en el home) salió de Suno. El logo de Noe al Espacio salió de un generador de imagen con un brief bien detallado. Copiá, adaptá, y hacé los tuyos.",
+      },
+      {
+        type: "h3",
+        text: "Prompt para Suno (soundtrack)",
+      },
+      {
+        type: "callout",
+        tone: "sky",
+        title: "Herramienta",
+        text: "Pegá este texto en Suno (modo instrumental / sin vocals). Después exportá el MP3 y ponelo en public/audio/.",
+      },
+      {
+        type: "code",
+        label: "Suno · soundtrack",
+        text: "Cinematic ambient orchestral soundtrack for a space exploration video game. Vast, mysterious, emotional and awe-inspiring. Slow evolving harmonic progression, deep analog synth pads, soft piano motifs, distant choir textures, subtle strings, warm brass swells, delicate arpeggios and shimmering sound design. Evokes the feeling of leaving Earth behind and discovering the unknown among stars and nebulae. Minimal percussion, spacious reverb, gradual crescendo, immersive atmosphere, sense of curiosity, isolation, hope and infinite scale. No vocals. High-quality film score, emotional, atmospheric, contemplative, suitable as exploration background music.",
+      },
+      {
+        type: "h3",
+        text: "Prompt para el logo",
+      },
+      {
+        type: "callout",
+        tone: "amber",
+        title: "Herramienta",
+        text: "Usalo en un generador de imagen (ChatGPT Image, Midjourney, etc.). Pedí composición cuadrada y fondo transparente si la herramienta lo permite; después recortá el badge para la home.",
+      },
+      {
+        type: "code",
+        label: "Imagen · logo badge",
+        text: "Create a premium illustrated badge logo for a young female astronaut named Noe.\n\nThe composition is centered and perfectly symmetrical inside a rounded shield emblem with a thick cream-colored outline.\n\nThe character is shown from the waist up, standing confidently with her arms crossed, smiling warmly at the viewer. She has long straight brown hair, large expressive brown eyes, soft facial features, and a stylized semi-realistic cartoon appearance inspired by modern animated illustrations. The proportions are elegant, with a slightly oversized head and expressive eyes, but not chibi.\n\nShe wears a modern dark navy astronaut flight suit with realistic stitching, subtle fabric folds, embroidered space mission patches, an Argentine flag patch on one sleeve, and a circular mission badge on the chest. The suit looks authentic yet clean and slightly stylized.\n\nBehind her is a deep blue starry space background with glowing golden stars, subtle nebula textures, and a few tiny asteroids. Floating around her are a small white rocket launching upward on the left and a blue satellite orbiting on the right, creating visual balance.\n\nAt the bottom of the badge is a bold title:\nNOE\nin huge icy blue 3D block letters with beveled edges, white highlights, subtle cracked ice texture, dark navy outline, and soft shadows.\n\nBelow it, in smaller bold gold lettering:\nAL ESPACIO\nusing a clean geometric sans-serif font with a dark outline.\n\nThe badge has layered borders, polished gradients, subtle glow effects, soft rim lighting, and high-quality game-logo rendering similar to premium mascot logos.\n\nStyle: polished digital painting, Pixar-quality illustration, modern mascot logo, collectible sticker aesthetic, esports badge quality, highly detailed, vibrant colors, soft cinematic lighting, crisp outlines, clean composition, premium children's educational branding.\n\nColor palette: navy blue, cyan, white, gold, cream, warm orange accents.\n\nThe overall feeling should communicate adventure, optimism, science, space exploration, and inspiration.\n\nSquare composition, centered layout, transparent background, ultra high resolution.",
+      },
+      {
+        type: "callout",
+        tone: "emerald",
+        title: "Tip de taller",
+        text: "Un buen prompt de arte describe composición, personaje, estilo, paleta y sensación. Cuanto más concreto, menos “lotería”. Después iterá: “mismo logo, menos brillo” o “más bandera argentina en el hombro”.",
+      },
+      {
+        type: "prompt",
+        text: "Reescribí el prompt del logo cambiando a un astronauta de mi ciudad / región y un título nuevo para mi juego. Mantené la estructura (composición, personaje, fondo, tipografía, estilo, paleta).",
+      },
+    ],
+  },
+  {
     id: "taller",
     eyebrow: "Para docentes y clubs",
     title: "Cómo usarlo en un taller",
