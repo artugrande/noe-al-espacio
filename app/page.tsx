@@ -174,19 +174,88 @@ function ResultCard({
     submitted.current = true
   }, [snapshot.score])
 
+  if (won) {
+    return (
+      <div
+        className={
+          overlay
+            ? "absolute inset-0 z-30 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
+            : "flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5 py-8"
+        }
+      >
+        <div className="grid w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-slate-950/90 text-white shadow-2xl shadow-sky-950/40 backdrop-blur md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+          <div className="relative min-h-56 bg-slate-900 md:min-h-full">
+            <Image
+              src="/images/noe-estacion.png"
+              alt="NOE llegando a la estación espacial"
+              width={1254}
+              height={1254}
+              priority
+              className="h-full w-full object-cover object-center"
+            />
+          </div>
+
+          <div className="flex flex-col justify-center p-6 text-center sm:p-8 md:text-left">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-300">
+              Misión cumplida
+            </p>
+            <h1 className="mt-3 text-2xl font-black leading-tight sm:text-3xl">
+              ¡Felicidades!
+            </h1>
+            <p className="mt-3 text-base leading-relaxed text-slate-200 sm:text-lg">
+              Lograste llevar a NOE hasta la estación espacial y completar su
+              misión.
+            </p>
+
+            <div className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-400/10 px-4 py-4">
+              <p className="text-xs uppercase tracking-widest text-amber-200/80">
+                Tu puntaje
+              </p>
+              <p className="text-5xl font-black text-amber-300">
+                {snapshot.score}
+              </p>
+            </div>
+
+            {snapshot.achievements.length > 0 ? (
+              <ul className="mt-4 flex flex-wrap justify-center gap-2 md:justify-start">
+                {snapshot.achievements.map((achievement) => (
+                  <li
+                    key={achievement}
+                    className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs sm:text-sm"
+                  >
+                    {achievementLabels[achievement]}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={startWithAudio}
+                className="rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 px-5 py-3 font-bold transition hover:scale-[1.02]"
+              >
+                Jugar de nuevo
+              </button>
+              <button
+                type="button"
+                onClick={resetSession}
+                className="rounded-xl border border-white/20 bg-white/5 px-5 py-3 font-bold transition hover:bg-white/10"
+              >
+                Menú inicial
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={
-        overlay
-          ? "absolute inset-x-0 bottom-0 z-30 flex justify-center bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-6 pt-16"
-          : "flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5"
-      }
-    >
+    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5">
       <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-slate-950/85 p-8 text-center text-white backdrop-blur">
-        <p className="text-5xl">{won ? "🛰️" : "💥"}</p>
-        <h1 className="mt-4 text-4xl font-black">
-          {won ? "¡Llegaste a la estación!" : "Fin de la misión"}
-        </h1>
+        <p className="text-5xl">💥</p>
+        <h1 className="mt-4 text-4xl font-black">Fin de la misión</h1>
         <p className="mt-5 text-sm uppercase tracking-widest text-slate-400">
           Puntaje final
         </p>
@@ -236,7 +305,7 @@ function ResultCard({
             onClick={resetSession}
             className="rounded-xl border border-white/20 bg-white/5 px-5 py-3 font-bold"
           >
-            Inicio
+            Menú inicial
           </button>
         </div>
       </div>
