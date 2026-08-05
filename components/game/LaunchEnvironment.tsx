@@ -148,9 +148,12 @@ export function LaunchEnvironment() {
       </group>
 
       <group ref={worldRef}>
-        {/* One continuous green ground — no ocean / shore bands that split on scroll */}
-        <mesh position={[0, -2.2, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[40, 22]} />
+        {/*
+          Very wide ground so perspective edges stay off-screen while ascending.
+          A ~40-unit plane reads as a trapezoid at the bottom of the frame.
+        */}
+        <mesh position={[0, -2.2, -2]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[220, 80]} />
           <meshStandardMaterial color="#3d8c4e" roughness={0.95} flatShading />
         </mesh>
 
