@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { GameSession } from "@/components/game/GameSession"
 import { Hud } from "@/components/hud/Hud"
@@ -101,6 +102,26 @@ function HomeScreen() {
             )}
           </div>
         </div>
+
+        <Link
+          href="/construir"
+          className="mt-5 block rounded-3xl border border-amber-300/30 bg-gradient-to-br from-amber-500/15 via-sky-500/10 to-indigo-600/20 p-6 backdrop-blur transition hover:border-amber-300/60 hover:scale-[1.01]"
+        >
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-200">
+            Modo taller
+          </p>
+          <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
+            Construí tu propio juego
+          </h2>
+          <p className="mt-2 max-w-2xl text-slate-200">
+            Guía educativa: Cursor, stack, prompts, arquitectura y el paso a paso
+            para armar tu misión — en modo presentación o lectura. Inspirado en
+            astronautas argentinos.
+          </p>
+          <p className="mt-4 text-sm font-bold text-sky-300">
+            Abrir la guía →
+          </p>
+        </Link>
 
         <footer className="mt-8 text-center text-sm text-slate-400">
           Hecho en Salta por @artugrande ·{" "}
