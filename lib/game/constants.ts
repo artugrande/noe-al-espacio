@@ -8,8 +8,8 @@ export const SCORE_MATE = 10
 export const SCORE_EMPANADA = 15
 export const HIGH_SCORES_KEY = "noe_v2_high_scores"
 export const HIGH_SCORES_LIMIT = 5
-/** Player hitbox (slightly tight vs visual Starship). */
-export const PLAYER_RADIUS = 0.38
+/** Player hitbox — matches compact white rocket. */
+export const PLAYER_RADIUS = 0.32
 /** Default junk radius — pickups use larger collect radii in Hazards. */
 export const HAZARD_RADIUS = 0.22
 export const PICKUP_RADIUS = 0.42
