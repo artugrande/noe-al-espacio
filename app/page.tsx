@@ -352,9 +352,10 @@ function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
 
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 z-40 bg-black transition-opacity duration-[1800ms] ease-out ${
+        className={`pointer-events-none absolute inset-0 z-40 bg-black transition-opacity ease-out ${
           introCover ? "opacity-100" : "opacity-0"
         }`}
+        style={{ transitionDuration: "3.8s" }}
       />
     </section>
   )
