@@ -54,8 +54,8 @@ function HomeScreen() {
           <Image
             src="/images/noe-al-espacio-logo.png"
             alt="Noe al Espacio"
-            width={952}
-            height={1019}
+            width={926}
+            height={1046}
             priority
             className="mb-4 h-auto w-[min(18rem,72vw)] drop-shadow-[0_12px_40px_rgba(56,189,248,0.35)] sm:w-[min(22rem,50vw)]"
           />
