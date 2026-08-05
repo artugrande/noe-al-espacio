@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 import { listGlobalScores, submitGlobalScore } from "@/lib/game/leaderboard"
 import { sanitizePlayerName, sanitizeScore } from "@/lib/game/scoreValidation"
-import { isRedisConfigured } from "@/lib/server/redis"
+import { isSupabaseConfigured } from "@/lib/supabase/admin"
 
 export const runtime = "nodejs"
 
 export async function GET() {
-  if (!isRedisConfigured()) {
+  if (!isSupabaseConfigured()) {
     return NextResponse.json(
       { scores: [], global: false, error: "Leaderboard no configurado" },
       { status: 503 },
@@ -26,7 +26,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  if (!isRedisConfigured()) {
+  if (!isSupabaseConfigured()) {
     return NextResponse.json(
       { error: "Leaderboard no configurado" },
       { status: 503 },
@@ -41,7 +41,8 @@ export async function POST(request: Request) {
   }
 
   const record = body as { name?: unknown; score?: unknown }
-  const name = typeof record.name === "string" ? sanitizePlayerName(record.name) : null
+  const name =
+    typeof record.name === "string" ? sanitizePlayerName(record.name) : null
   const score = sanitizeScore(record.score)
 
   if (!name) {

@@ -43,15 +43,16 @@ npm run dev
 
 Abrí **http://localhost:3000** en el navegador.
 
-### 4. Ranking global (opcional, Upstash Redis)
+### 4. Ranking global (Supabase)
 
-Sin Redis el juego funciona igual, pero el leaderboard queda solo en ese dispositivo.
+Sin Supabase el juego funciona igual, pero el leaderboard queda solo en ese dispositivo.
 
-1. Creá una base **Upstash Redis** (gratis) en [console.upstash.com](https://console.upstash.com) o desde Vercel → Storage.
-2. Copiá `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` a `.env.local` (ver `.env.example`).
-3. En Vercel: Project → Settings → Environment Variables → las mismas dos vars → Redeploy.
+1. Proyecto Supabase (ej. **noe-al-espacio** / Argentina Space) → restaurá si estaba pausado.
+2. Corré el SQL de `supabase/migrations/001_leaderboard.sql` en **SQL Editor**.
+3. Copiá `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` a `.env.local` (ver `.env.example`).
+4. En Vercel: mismas env vars → Redeploy.
 
-Al terminar una partida podés escribir tu nombre y publicar el puntaje en el ranking global.
+Hay un cron diario (`/api/keepalive`) que pingeá Supabase para que el free tier no se pause por inactividad.
 
 ### 5. Abrirlo en Cursor
 
