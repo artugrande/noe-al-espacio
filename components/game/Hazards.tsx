@@ -12,6 +12,7 @@ import {
   BOOST_DURATION_MS,
   BOOST_SCROLL_MULT,
   BOOST_SPAWN_MULT,
+  BOOST_TIME_MULT,
   FORMATION_CHANCE,
   FORMATION_COOLDOWN_MS,
   GAME_DURATION_MS,
@@ -194,14 +195,19 @@ export function Hazards() {
       return
 
     const frameMs = dt * 1000
-    elapsedMs.current += frameMs
-    playClock.elapsedMs = elapsedMs.current
-    hudAccumulatorMs.current += frameMs
-    formationCooldown.current = Math.max(0, formationCooldown.current - frameMs)
-
-    if (boostRemaining.current > 0) {
+    // Impulso drains in real time, but mission time races ahead.
+    const boostingNow = boostRemaining.current > 0
+    if (boostingNow) {
       boostRemaining.current = Math.max(0, boostRemaining.current - frameMs)
     }
+    const missionFrameMs = frameMs * (boostingNow ? BOOST_TIME_MULT : 1)
+    elapsedMs.current += missionFrameMs
+    playClock.elapsedMs = elapsedMs.current
+    hudAccumulatorMs.current += missionFrameMs
+    formationCooldown.current = Math.max(
+      0,
+      formationCooldown.current - missionFrameMs,
+    )
 
     if (turbulenceRemaining.current > 0) {
       turbulenceRemaining.current = Math.max(
@@ -251,11 +257,10 @@ export function Hazards() {
     const difficulty = getDifficulty(elapsedMs.current)
     const remainingMs = GAME_DURATION_MS - elapsedMs.current
     const clearingLane = remainingMs <= ARRIVAL_CLEAR_MS
-    const boosting = boostRemaining.current > 0
     const scrollSpeed =
-      difficulty.scrollSpeed * (boosting ? BOOST_SCROLL_MULT : 1)
+      difficulty.scrollSpeed * (boostingNow ? BOOST_SCROLL_MULT : 1)
     const spawnChance =
-      difficulty.spawnChance * (boosting ? BOOST_SPAWN_MULT : 1)
+      difficulty.spawnChance * (boostingNow ? BOOST_SPAWN_MULT : 1)
 
     if (clearingLane) {
       for (let index = 0; index < POOL_SIZE; index += 1) {

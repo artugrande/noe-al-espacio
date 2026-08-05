@@ -34,6 +34,8 @@ export const BOOST_DURATION_MS = 5_000
 export const BOOST_SCROLL_MULT = 2.65
 /** Slight spawn bump during impulso so the lane stays dense. */
 export const BOOST_SPAWN_MULT = 1.55
+/** Mission clock runs faster during impulso (approaching the station). */
+export const BOOST_TIME_MULT = 2.2
 /** Secondary objective: mates to collect in one run. */
 export const OBJECTIVE_MATES = 5
 /** Turbulence windows. */
