@@ -40,6 +40,8 @@ export function Effects() {
 
   useFrame((_, dt) => {
     const snapshot = getSnapshot()
+    const onPad =
+      snapshot.screen === "playing" && !snapshot.launched && !snapshot.paused
     const flying =
       snapshot.screen === "playing" && snapshot.launched && !snapshot.paused
     const inLaunchSmoke = flying && playClock.elapsedMs < LAUNCH_SMOKE_MS
@@ -68,29 +70,42 @@ export function Effects() {
       }
     }
 
-    if (inLaunchSmoke) {
+    // Idle pad smoke + launch plume
+    if (onPad || inLaunchSmoke) {
       smokeTimer.current += dt
-      while (smokeTimer.current >= 0.03) {
-        smokeTimer.current -= 0.03
+      const smokeInterval = onPad ? 0.07 : 0.03
+      while (smokeTimer.current >= smokeInterval) {
+        smokeTimer.current -= smokeInterval
         const index = smokeCursor.current
         const particle = smoke.current[index]
         const mesh = smokeMeshes.current[index]
         smokeCursor.current = (index + 1) % SMOKE_COUNT
-        particle.maxLife = 1.4 + Math.random() * 0.9
+        particle.maxLife = onPad
+          ? 1.1 + Math.random() * 0.7
+          : 1.4 + Math.random() * 0.9
         particle.life = particle.maxLife
-        // Long columnar smoke stretching downward (v1 feel)
-        particle.velocity = [
-          (Math.random() - 0.5) * 0.9,
-          -3.2 - Math.random() * 2.4,
-          (Math.random() - 0.5) * 0.7,
-        ]
+        particle.velocity = onPad
+          ? [
+              (Math.random() - 0.5) * 0.55,
+              -1.1 - Math.random() * 1.2,
+              (Math.random() - 0.5) * 0.45,
+            ]
+          : [
+              (Math.random() - 0.5) * 0.9,
+              -3.2 - Math.random() * 2.4,
+              (Math.random() - 0.5) * 0.7,
+            ]
         mesh?.position.set(
-          playerPos.x + (Math.random() - 0.5) * 0.35,
-          playerPos.y - 0.95,
+          playerPos.x + (Math.random() - 0.5) * (onPad ? 0.22 : 0.35),
+          playerPos.y - (onPad ? 0.88 : 0.95),
           playerPos.z + (Math.random() - 0.5) * 0.2,
         )
         if (mesh) {
-          mesh.scale.set(0.35, 0.9 + Math.random() * 0.8, 0.35)
+          mesh.scale.set(
+            onPad ? 0.22 : 0.35,
+            onPad ? 0.55 + Math.random() * 0.45 : 0.9 + Math.random() * 0.8,
+            onPad ? 0.22 : 0.35,
+          )
         }
       }
     }

@@ -1,6 +1,7 @@
 "use client"
 
 import type { HighScoreEntry } from "@/lib/game/types"
+import { useT } from "@/lib/i18n/locale"
 
 export function LeaderboardPanel({
   scores,
@@ -11,17 +12,25 @@ export function LeaderboardPanel({
   global: boolean
   loading?: boolean
 }) {
+  const t = useT()
+
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-xl font-bold text-amber-300">🏆 Mejores puntajes</h2>
+        <h2 className="text-xl font-bold text-amber-300">
+          {t("leaderboardTitle")}
+        </h2>
         <span className="text-xs uppercase tracking-wider text-slate-400">
-          {loading ? "Cargando…" : global ? "Global" : "Este dispositivo"}
+          {loading
+            ? t("leaderboardLoading")
+            : global
+              ? t("leaderboardGlobal")
+              : t("leaderboardLocal")}
         </span>
       </div>
 
       {loading ? (
-        <p className="mt-5 text-slate-300">Trayendo el ranking…</p>
+        <p className="mt-5 text-slate-300">{t("leaderboardLoading")}</p>
       ) : scores.length > 0 ? (
         <ol className="mt-4 space-y-2">
           {scores.map((entry, index) => (
@@ -40,9 +49,7 @@ export function LeaderboardPanel({
           ))}
         </ol>
       ) : (
-        <p className="mt-5 text-slate-300">
-          ¡Sé la primera persona en entrar al ranking!
-        </p>
+        <p className="mt-5 text-slate-300">{t("leaderboardEmpty")}</p>
       )}
     </div>
   )

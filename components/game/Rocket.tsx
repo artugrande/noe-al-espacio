@@ -76,12 +76,20 @@ export function Rocket({ launched }: { launched: boolean }) {
 
     const flame = flameRef.current
     if (flame) {
-      flame.visible = launched && !won
+      // Soft idle burn on the pad; full plume after launch.
+      const idle = !launched && !won && screen === "playing"
+      flame.visible = (launched || idle) && !won
       if (flame.visible) {
         const t = state.clock.elapsedTime
-        const flicker = 0.82 + Math.sin(t * 28) * 0.12 + Math.sin(t * 47) * 0.08
-        const sway = Math.sin(t * 22) * 0.04
-        flame.scale.set(flicker * 0.95, flicker * (1.05 + Math.sin(t * 35) * 0.15), flicker)
+        const idleScale = idle ? 0.42 : 1
+        const flicker =
+          (0.82 + Math.sin(t * 28) * 0.12 + Math.sin(t * 47) * 0.08) * idleScale
+        const sway = Math.sin(t * 22) * (idle ? 0.02 : 0.04)
+        flame.scale.set(
+          flicker * 0.95,
+          flicker * (1.05 + Math.sin(t * 35) * 0.15),
+          flicker,
+        )
         flame.position.x = sway
         if (flameCore.current) {
           flameCore.current.scale.setScalar(0.9 + Math.sin(t * 40) * 0.15)

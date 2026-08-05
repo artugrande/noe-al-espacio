@@ -6,6 +6,7 @@ import {
   subscribe,
 } from "@/components/game/gameState"
 import { GAME_DURATION_MS } from "@/lib/game/constants"
+import { useT } from "@/lib/i18n/locale"
 import { FloatToast } from "./FloatToast"
 
 function formatTime(milliseconds: number) {
@@ -16,6 +17,7 @@ function formatTime(milliseconds: number) {
 }
 
 export function Hud() {
+  const t = useT()
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
   const remainingMs = GAME_DURATION_MS - snapshot.gameTimeMs
   const boostSeconds = Math.ceil(snapshot.boostRemainingMs / 1000)
@@ -26,12 +28,11 @@ export function Hud() {
     <div className="pointer-events-none absolute inset-0 z-10 text-white">
       <FloatToast />
 
-      {/* Top: score + timer only (right side free for mute button) */}
       <div className="flex items-start justify-between gap-3 p-4 pr-20">
         <div className="flex flex-col gap-2">
           <div className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-2 backdrop-blur">
             <p className="text-xs uppercase tracking-wider text-slate-400">
-              Puntaje
+              {t("score")}
             </p>
             <p className="text-2xl font-black text-amber-300">{snapshot.score}</p>
           </div>
@@ -48,26 +49,29 @@ export function Hud() {
         </div>
 
         <div className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-2 text-center backdrop-blur">
-          <p className="text-xs uppercase tracking-wider text-slate-400">Tiempo</p>
+          <p className="text-xs uppercase tracking-wider text-slate-400">
+            {t("time")}
+          </p>
           <p className="font-mono text-2xl font-black">
             {formatTime(remainingMs)}
           </p>
           <p className="mt-1 text-xs text-slate-300">
-            Meta 🧉 {snapshot.matesCollected}/{snapshot.objectiveTarget}
+            {t("objective")} 🧉 {snapshot.matesCollected}/
+            {snapshot.objectiveTarget}
             {snapshot.objectiveDone ? " ✓" : ""}
           </p>
         </div>
 
-        {/* Spacer so the timer stays visually centered */}
         <div className="min-w-28" aria-hidden />
       </div>
 
-      {/* Power-ups bottom-right — clear of mute (top) and mobile controls */}
       <div className="absolute bottom-24 right-4 flex min-w-28 flex-col gap-2 sm:bottom-4">
         <div className="rounded-xl border border-sky-400/30 bg-slate-950/70 px-4 py-2 text-right backdrop-blur">
-          <p className="text-xs uppercase tracking-wider text-slate-400">Escudo</p>
+          <p className="text-xs uppercase tracking-wider text-slate-400">
+            {t("shield")}
+          </p>
           <p className="text-xl font-black">
-            {snapshot.hasShield ? "🛡️ Activo" : "—"}
+            {snapshot.hasShield ? t("shieldActive") : "—"}
           </p>
         </div>
         <div
@@ -78,11 +82,11 @@ export function Hud() {
           }`}
         >
           <p className="text-xs uppercase tracking-wider text-slate-400">
-            Impulso
+            {t("boost")}
           </p>
           <p className="text-xl font-black text-amber-300">
             {snapshot.boostRemainingMs > 0
-              ? `⚡ ¡RÁPIDO! ${boostSeconds}s`
+              ? `${t("boostActive")} ${boostSeconds}s`
               : "—"}
           </p>
         </div>
@@ -93,17 +97,19 @@ export function Hud() {
               : "border-rose-400/30 bg-slate-950/70"
           }`}
         >
-          <p className="text-xs uppercase tracking-wider text-slate-400">Imán</p>
+          <p className="text-xs uppercase tracking-wider text-slate-400">
+            {t("magnet")}
+          </p>
           <p className="text-xl font-black text-rose-200">
             {snapshot.magnetRemainingMs > 0
-              ? `🧲 ¡ATRÁE! ${magnetSeconds}s`
+              ? `${t("magnetActive")} ${magnetSeconds}s`
               : "—"}
           </p>
         </div>
         {snapshot.turbulenceMs > 0 ? (
           <div className="rounded-xl border border-violet-400/60 bg-violet-500/25 px-4 py-2 text-right backdrop-blur animate-pulse">
             <p className="text-xs uppercase tracking-wider text-violet-200">
-              Turbulencia
+              {t("turbulence")}
             </p>
             <p className="text-lg font-black text-violet-100">
               🌀 {turbSeconds}s

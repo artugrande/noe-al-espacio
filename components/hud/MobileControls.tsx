@@ -6,10 +6,12 @@ import { getSnapshot, subscribe } from "@/components/game/gameState"
 import { input } from "@/components/game/input"
 import { useMobile } from "@/components/hud/useMobile"
 import { unlock } from "@/lib/game/audio"
+import { useT } from "@/lib/i18n/locale"
 
 export function MobileControls() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
   const isMobile = useMobile()
+  const t = useT()
 
   if (!isMobile || snapshot.screen !== "playing") return null
 
@@ -21,7 +23,7 @@ export function MobileControls() {
       <div className="flex gap-4">
         <button
           type="button"
-          aria-label="Mover a la izquierda"
+          aria-label={t("moveLeft")}
           onTouchStart={(event) => {
             event.preventDefault()
             input.setLeft(true)
@@ -39,7 +41,7 @@ export function MobileControls() {
 
         <button
           type="button"
-          aria-label="Mover a la derecha"
+          aria-label={t("moveRight")}
           onTouchStart={(event) => {
             event.preventDefault()
             input.setRight(true)
@@ -59,7 +61,7 @@ export function MobileControls() {
       {!snapshot.launched ? (
         <button
           type="button"
-          aria-label="Despegar"
+          aria-label={t("launch")}
           onTouchStart={(event) => {
             event.preventDefault()
             input.pressLaunch()

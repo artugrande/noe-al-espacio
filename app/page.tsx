@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useEffect, useState, useSyncExternalStore } from "react"
 import { GameSession } from "@/components/game/GameSession"
 import { Hud } from "@/components/hud/Hud"
+import { LanguageToggle } from "@/components/hud/LanguageToggle"
 import { LeaderboardPanel } from "@/components/hud/LeaderboardPanel"
 import { MobileControls } from "@/components/hud/MobileControls"
 import { MuteButton } from "@/components/hud/MuteButton"
@@ -19,19 +20,10 @@ import {
   type SessionSnapshot,
 } from "@/components/game/gameState"
 import { playSoundtrack, unlock } from "@/lib/game/audio"
-import { pickCuriosity } from "@/lib/game/curiosidades"
 import { fetchLeaderboard } from "@/lib/game/scores"
 import type { AchievementId, HighScoreEntry } from "@/lib/game/types"
-
-const achievementLabels: Record<AchievementId, string> = {
-  first_mate: "Primer mate",
-  survived_90s: "90 segundos en órbita",
-  first_shield: "Escudo al rescate",
-  first_boost: "Sobreviví el impulso",
-  first_magnet: "Imán de mates",
-  combo_x4: "Combo x4",
-  mate_objective: "5 mates en una misión",
-}
+import { useLocale, useT } from "@/lib/i18n/locale"
+import type { MessageKey } from "@/lib/i18n/messages"
 
 function useSessionSnapshot() {
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
@@ -43,14 +35,20 @@ function startWithAudio() {
   startPlaying()
 }
 
+function achievementLabel(id: AchievementId, t: (key: MessageKey) => string) {
+  return t(`achievement.${id}` as MessageKey)
+}
+
 function HomeScreen() {
-  const [curiosity, setCuriosity] = useState(() => pickCuriosity(0))
+  const t = useT()
+  const { locale } = useLocale()
+  const [curiosityIndex, setCuriosityIndex] = useState(0)
   const [highScores, setHighScores] = useState<HighScoreEntry[]>([])
   const [globalBoard, setGlobalBoard] = useState(false)
   const [loadingScores, setLoadingScores] = useState(true)
 
   useEffect(() => {
-    setCuriosity(pickCuriosity(Date.now()))
+    setCuriosityIndex(Math.abs(Math.floor(Date.now())) % 3)
     let cancelled = false
     void fetchLeaderboard().then((result) => {
       if (cancelled) return
@@ -63,26 +61,28 @@ function HomeScreen() {
     }
   }, [])
 
+  const curiosityTitle = t(
+    `curiosity.${curiosityIndex}.title` as MessageKey,
+  )
+  const curiosityBody = t(`curiosity.${curiosityIndex}.body` as MessageKey)
+
   return (
     <section className="relative min-h-screen bg-[radial-gradient(circle_at_top,#172554,#020617_55%,#000)] px-5 py-8 text-white sm:py-10">
       <div className="mx-auto w-full max-w-4xl pb-12">
         <header className="mb-6 flex flex-col items-center text-center">
           <Image
             src="/images/noe-al-espacio-logo.png"
-            alt="Logo de Noe al Espacio: cohete blanco con mate y estrellas"
+            alt={t("logoAlt")}
             width={930}
             height={1050}
             priority
             className="noe-logo-tilt mb-3 h-auto w-[min(10.5rem,42vw)] drop-shadow-[0_10px_28px_rgba(56,189,248,0.3)] sm:w-[min(12rem,28vw)]"
           />
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
-            Misión Argentina
+            {t("missionArgentina")}
           </p>
           <h1 className="sr-only">Noe al Espacio</h1>
-          <p className="mt-1 max-w-xl text-slate-300">
-            Esquivá oleadas, armá combos, juntá mates con el 🧲 imán, y llegá a
-            la estación.
-          </p>
+          <p className="mt-1 max-w-xl text-slate-300">{t("homeTagline")}</p>
         </header>
 
         <div className="grid gap-5 md:grid-cols-2">
@@ -92,14 +92,14 @@ function HomeScreen() {
               onClick={startWithAudio}
               className="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 px-6 py-4 text-xl font-bold shadow-lg shadow-sky-950/40 transition hover:scale-[1.02]"
             >
-              🚀 Iniciar Juego
+              {t("startGame")}
             </button>
             <div className="mt-6 border-t border-white/10 pt-5">
               <p className="text-sm font-bold uppercase tracking-wider text-sky-300">
-                Dato curioso · {curiosity.title}
+                {t("curiosity")} · {curiosityTitle}
               </p>
-              <p className="mt-2 leading-relaxed text-slate-200">
-                {curiosity.body}
+              <p className="mt-2 leading-relaxed text-slate-200" key={locale}>
+                {curiosityBody}
               </p>
             </div>
           </div>
@@ -118,23 +118,19 @@ function HomeScreen() {
           className="mt-5 block rounded-3xl border border-amber-300/30 bg-gradient-to-br from-amber-500/15 via-sky-500/10 to-indigo-600/20 p-6 backdrop-blur transition hover:border-amber-300/60 hover:scale-[1.01]"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-200">
-            Modo taller
+            {t("workshopMode")}
           </p>
           <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-            Construí tu propio juego
+            {t("workshopTitle")}
           </h2>
-          <p className="mt-2 max-w-2xl text-slate-200">
-            Guía educativa: Cursor, stack, prompts, arquitectura y el paso a paso
-            para armar tu misión — en modo presentación o lectura. Inspirado en
-            astronautas argentinos.
-          </p>
+          <p className="mt-2 max-w-2xl text-slate-200">{t("workshopBody")}</p>
           <p className="mt-4 text-sm font-bold text-sky-300">
-            Abrir la guía →
+            {t("workshopCta")}
           </p>
         </Link>
 
         <footer className="mt-8 text-center text-sm text-slate-400">
-          Hecho en Salta por{" "}
+          {t("madeInSalta")}{" "}
           <a
             href="https://x.com/ArtuGrande"
             target="_blank"
@@ -165,6 +161,7 @@ function ResultCard({
   snapshot: SessionSnapshot
   overlay?: boolean
 }) {
+  const t = useT()
   const won = snapshot.screen === "win"
 
   if (won) {
@@ -180,7 +177,7 @@ function ResultCard({
           <div className="relative min-h-56 bg-slate-900 md:min-h-full">
             <Image
               src="/images/noe-estacion.png"
-              alt="NOE llegando a la estación espacial"
+              alt="NOE"
               width={1254}
               height={1254}
               priority
@@ -190,19 +187,18 @@ function ResultCard({
 
           <div className="flex max-h-[85vh] flex-col justify-center overflow-y-auto p-6 text-center sm:p-8 md:text-left">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-300">
-              Misión cumplida
+              {t("missionComplete")}
             </p>
             <h1 className="mt-3 text-2xl font-black leading-tight sm:text-3xl">
-              ¡Felicidades!
+              {t("congratsTitle")}
             </h1>
             <p className="mt-3 text-base leading-relaxed text-slate-200 sm:text-lg">
-              Lograste llevar a NOE hasta la estación espacial y completar su
-              misión.
+              {t("congratsBody")}
             </p>
 
             <div className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-400/10 px-4 py-4">
               <p className="text-xs uppercase tracking-widest text-amber-200/80">
-                Tu puntaje
+                {t("yourScore")}
               </p>
               <p className="text-5xl font-black text-amber-300">
                 {snapshot.score}
@@ -216,7 +212,7 @@ function ResultCard({
                     key={achievement}
                     className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs sm:text-sm"
                   >
-                    {achievementLabels[achievement]}
+                    {achievementLabel(achievement, t)}
                   </li>
                 ))}
               </ul>
@@ -230,14 +226,14 @@ function ResultCard({
                 onClick={startWithAudio}
                 className="rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 px-5 py-3 font-bold transition hover:scale-[1.02]"
               >
-                Jugar de nuevo
+                {t("playAgain")}
               </button>
               <button
                 type="button"
                 onClick={resetSession}
                 className="rounded-xl border border-white/20 bg-white/5 px-5 py-3 font-bold transition hover:bg-white/10"
               >
-                Menú inicial
+                {t("mainMenu")}
               </button>
             </div>
           </div>
@@ -250,22 +246,22 @@ function ResultCard({
     <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#172554,#020617_60%,#000)] px-5 py-8">
       <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-slate-950/85 p-8 text-center text-white backdrop-blur">
         <p className="text-5xl">💥</p>
-        <h1 className="mt-4 text-4xl font-black">Fin de la misión</h1>
+        <h1 className="mt-4 text-4xl font-black">{t("missionEnded")}</h1>
         <p className="mt-5 text-sm uppercase tracking-widest text-slate-400">
-          Puntaje final
+          {t("finalScore")}
         </p>
         <p className="text-5xl font-black text-amber-300">{snapshot.score}</p>
 
         {snapshot.achievements.length > 0 ? (
           <div className="mt-6">
-            <h2 className="font-bold text-sky-300">Logros desbloqueados</h2>
+            <h2 className="font-bold text-sky-300">{t("achievements")}</h2>
             <ul className="mt-3 flex flex-wrap justify-center gap-2">
               {snapshot.achievements.map((achievement) => (
                 <li
                   key={achievement}
                   className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-sm"
                 >
-                  {achievementLabels[achievement]}
+                  {achievementLabel(achievement, t)}
                 </li>
               ))}
             </ul>
@@ -280,14 +276,14 @@ function ResultCard({
             onClick={startWithAudio}
             className="rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 px-5 py-3 font-bold"
           >
-            Jugar de nuevo
+            {t("playAgain")}
           </button>
           <button
             type="button"
             onClick={resetSession}
             className="rounded-xl border border-white/20 bg-white/5 px-5 py-3 font-bold"
           >
-            Menú inicial
+            {t("mainMenu")}
           </button>
         </div>
       </div>
@@ -296,6 +292,7 @@ function ResultCard({
 }
 
 function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
+  const t = useT()
   const won = snapshot.screen === "win"
   const [showWinCard, setShowWinCard] = useState(false)
   const [introCover, setIntroCover] = useState(true)
@@ -309,7 +306,6 @@ function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
     return () => window.clearTimeout(timer)
   }, [won])
 
-  // Slow black fade-in when the playfield mounts (avoids a hard pop-in).
   useEffect(() => {
     setIntroCover(true)
     let inner = 0
@@ -333,17 +329,15 @@ function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
           onClick={resetSession}
           className="absolute bottom-4 left-4 z-20 rounded-xl border border-white/20 bg-slate-950/70 px-4 py-2 text-sm text-white backdrop-blur hover:bg-slate-800/80"
         >
-          Volver al inicio
+          {t("backHome")}
         </button>
       ) : null}
 
       {!snapshot.launched && !won ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-end justify-center pb-24 text-center text-white">
           <div className="rounded-2xl border border-sky-400/30 bg-slate-950/80 px-7 py-5 backdrop-blur">
-            <p className="text-2xl font-black">Presioná Espacio para despegar</p>
-            <p className="mt-1 text-sm text-slate-300">
-              A/D · 🛡️ escudo · ⚡ impulso · 🧲 imán · 🧉 meta · near-miss
-            </p>
+            <p className="text-2xl font-black">{t("pressSpace")}</p>
+            <p className="mt-1 text-sm text-slate-300">{t("controlsHint")}</p>
           </div>
         </div>
       ) : null}
@@ -365,7 +359,7 @@ function EndScreen({ snapshot }: { snapshot: SessionSnapshot }) {
   return <ResultCard snapshot={snapshot} />
 }
 
-export default function NoeAlEspacio() {
+function GameApp() {
   const snapshot = useSessionSnapshot()
   const inGame =
     snapshot.screen === "playing" ||
@@ -388,6 +382,7 @@ export default function NoeAlEspacio() {
       }`}
     >
       <Soundtrack />
+      <LanguageToggle />
       <MuteButton />
       {snapshot.screen === "home" || snapshot.screen === "loading" ? (
         <HomeScreen />
@@ -400,4 +395,8 @@ export default function NoeAlEspacio() {
       <OrientationWarning />
     </main>
   )
+}
+
+export default function NoeAlEspacio() {
+  return <GameApp />
 }

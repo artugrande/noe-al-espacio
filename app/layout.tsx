@@ -1,6 +1,8 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Space_Grotesk } from "next/font/google"
+import { HydrateLocale } from "@/components/hud/HydrateLocale"
+import { LocaleProvider } from "@/lib/i18n/locale"
 import "./globals.css"
 
 const spaceGrotesk = Space_Grotesk({
@@ -113,7 +115,10 @@ export default function RootLayout({
         />
       </head>
       <body className={`${spaceGrotesk.variable} font-space-grotesk bg-black`}>
-        {children}
+        <LocaleProvider>
+          <HydrateLocale />
+          {children}
+        </LocaleProvider>
       </body>
     </html>
   )

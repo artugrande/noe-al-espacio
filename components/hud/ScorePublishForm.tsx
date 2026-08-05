@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react"
 import { PLAYER_NAME_MAX } from "@/lib/game/scoreValidation"
 import { publishScore } from "@/lib/game/scores"
 import type { HighScoreEntry } from "@/lib/game/types"
+import { useT } from "@/lib/i18n/locale"
 import { LeaderboardPanel } from "./LeaderboardPanel"
 
 export function ScorePublishForm({
@@ -13,6 +14,7 @@ export function ScorePublishForm({
   score: number
   align?: "center" | "left"
 }) {
+  const t = useT()
   const [name, setName] = useState("")
   const [scores, setScores] = useState<HighScoreEntry[]>([])
   const [global, setGlobal] = useState(false)
@@ -46,13 +48,13 @@ export function ScorePublishForm({
       {status !== "saved" ? (
         <form onSubmit={onSubmit} className="mt-5 space-y-3">
           <label className="block text-sm text-slate-300">
-            Tu nombre para el ranking global
+            {t("publishNameLabel")}
             <input
               type="text"
               value={name}
               maxLength={PLAYER_NAME_MAX}
               autoComplete="nickname"
-              placeholder="Ej: Artu"
+              placeholder={t("publishPlaceholder")}
               onChange={(event) => setName(event.target.value)}
               className="mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-base text-white outline-none ring-sky-400/40 placeholder:text-slate-500 focus:ring-2"
             />
@@ -62,15 +64,13 @@ export function ScorePublishForm({
             disabled={status === "saving" || name.trim().length < 1}
             className="w-full rounded-xl border border-amber-300/40 bg-amber-400/15 px-5 py-3 font-bold text-amber-100 transition hover:bg-amber-400/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {status === "saving" ? "Publicando…" : "Publicar en el ranking"}
+            {status === "saving" ? t("publishing") : t("publishButton")}
           </button>
           {error ? <p className="text-sm text-rose-300">{error}</p> : null}
         </form>
       ) : (
         <p className="mt-5 text-sm font-semibold text-emerald-300">
-          {global
-            ? "¡Puntaje publicado en el ranking global!"
-            : "Guardado en este dispositivo (ranking global no disponible)."}
+          {global ? t("publishedGlobal") : t("publishedLocal")}
         </p>
       )}
 

@@ -42,6 +42,7 @@ import {
 } from "@/lib/game/formations"
 import { accumulateSpawns } from "@/lib/game/spawning"
 import type { HazardKind, JunkVariant } from "@/lib/game/types"
+import { t } from "@/lib/i18n/locale"
 import { getSnapshot, patchSnapshot, playClock, showToast } from "./gameState"
 import {
   getMagnetTexture,
@@ -385,7 +386,7 @@ export function Hazards() {
             comboMult: comboMultiplier(comboCount.current),
             reachedCombo4: reachedCombo4.current,
           })
-          showToast(`¡Wow! Estuvo cerca  +${points}`)
+          showToast(`${t("toastNearMiss")}  +${points}`)
         }
       }
 
@@ -483,7 +484,7 @@ export function Hazards() {
           magnetRemainingMs: MAGNET_DURATION_MS,
           usedMagnet: true,
         })
-        showToast("🧲 ¡Imán activado!")
+        showToast(t("toastMagnet"))
       } else {
         playSfx("shield")
         patchSnapshot({ hasShield: true })
