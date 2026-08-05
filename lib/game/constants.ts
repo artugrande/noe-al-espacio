@@ -36,6 +36,10 @@ export const BOOST_SCROLL_MULT = 2.65
 export const BOOST_SPAWN_MULT = 1.55
 /** Mission clock runs faster during impulso (approaching the station). */
 export const BOOST_TIME_MULT = 2.2
+/** Imán: pulls mates & medialunas toward the rocket. */
+export const MAGNET_DURATION_MS = 6_500
+export const MAGNET_RADIUS = 3.4
+export const MAGNET_PULL = 5.5
 /** Secondary objective: mates to collect in one run. */
 export const OBJECTIVE_MATES = 5
 /** Turbulence windows. */

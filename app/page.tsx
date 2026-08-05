@@ -24,6 +24,7 @@ const achievementLabels: Record<AchievementId, string> = {
   survived_90s: "90 segundos en órbita",
   first_shield: "Escudo al rescate",
   first_boost: "Sobreviví el impulso",
+  first_magnet: "Imán de mates",
   combo_x4: "Combo x4",
   mate_objective: "5 mates en una misión",
 }
@@ -53,19 +54,19 @@ function HomeScreen() {
         <header className="mb-6 flex flex-col items-center text-center">
           <Image
             src="/images/noe-al-espacio-logo.png"
-            alt="Noe al Espacio"
+            alt="Logo de Noe al Espacio: cohete blanco con mate y estrellas"
             width={930}
             height={1050}
             priority
-            className="mb-3 h-auto w-[min(10.5rem,42vw)] drop-shadow-[0_10px_28px_rgba(56,189,248,0.3)] sm:w-[min(12rem,28vw)]"
+            className="noe-logo-tilt mb-3 h-auto w-[min(10.5rem,42vw)] drop-shadow-[0_10px_28px_rgba(56,189,248,0.3)] sm:w-[min(12rem,28vw)]"
           />
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
             Misión Argentina
           </p>
           <h1 className="sr-only">Noe al Espacio</h1>
           <p className="mt-1 max-w-xl text-slate-300">
-            Esquivá oleadas, armá combos, sobreviví turbulencias e impulsos, y
-            llegá a la estación.
+            Esquivá oleadas, armá combos, juntá mates con el 🧲 imán, y llegá a
+            la estación.
           </p>
         </header>
 
@@ -131,7 +132,16 @@ function HomeScreen() {
         </Link>
 
         <footer className="mt-8 text-center text-sm text-slate-400">
-          Hecho en Salta por @artugrande ·{" "}
+          Hecho en Salta por{" "}
+          <a
+            href="https://x.com/ArtuGrande"
+            target="_blank"
+            rel="noreferrer"
+            className="text-sky-400 underline underline-offset-4"
+          >
+            @artugrande
+          </a>{" "}
+          ·{" "}
           <a
             href="https://www.desafia.tech"
             target="_blank"
@@ -267,7 +277,7 @@ function PlayingScreen({ snapshot }: { snapshot: SessionSnapshot }) {
           <div className="rounded-2xl border border-sky-400/30 bg-slate-950/80 px-7 py-5 backdrop-blur">
             <p className="text-2xl font-black">Presioná Espacio para despegar</p>
             <p className="mt-1 text-sm text-slate-300">
-              A/D · 🛡️ escudo · ⚡ impulso · 🧉 meta · near-miss suma combo
+              A/D · 🛡️ escudo · ⚡ impulso · 🧲 imán · 🧉 meta · near-miss
             </p>
           </div>
         </div>

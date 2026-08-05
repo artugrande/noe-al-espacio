@@ -17,6 +17,9 @@ import {
   FORMATION_COOLDOWN_MS,
   GAME_DURATION_MS,
   HAZARD_RADIUS,
+  MAGNET_DURATION_MS,
+  MAGNET_PULL,
+  MAGNET_RADIUS,
   NEAR_MISS_PADDING,
   OBJECTIVE_MATES,
   PICKUP_RADIUS,
@@ -40,7 +43,11 @@ import {
 import { accumulateSpawns } from "@/lib/game/spawning"
 import type { HazardKind, JunkVariant } from "@/lib/game/types"
 import { getSnapshot, patchSnapshot, playClock, showToast } from "./gameState"
-import { getMateTexture, getMedialunaTexture } from "./iconTextures"
+import {
+  getMagnetTexture,
+  getMateTexture,
+  getMedialunaTexture,
+} from "./iconTextures"
 import { playerPos } from "./playerRef"
 
 const POOL_SIZE = 40
@@ -57,11 +64,12 @@ interface HazardSlot {
 }
 
 function randomKind(): HazardKind {
-  if (Math.random() < 0.64) return "junk"
+  if (Math.random() < 0.62) return "junk"
   const pickupRoll = Math.random()
-  if (pickupRoll < 0.1) return "shield"
-  if (pickupRoll < 0.2) return "boost"
-  return pickupRoll < 0.6 ? "mate" : "empanada"
+  if (pickupRoll < 0.09) return "shield"
+  if (pickupRoll < 0.18) return "boost"
+  if (pickupRoll < 0.28) return "magnet"
+  return pickupRoll < 0.64 ? "mate" : "empanada"
 }
 
 function randomJunkVariant(): JunkVariant {
@@ -103,6 +111,7 @@ function setJunkVisual(group: Group, variant: JunkVariant) {
   group.children[5].visible = false
   group.children[6].visible = variant === "heavy"
   group.children[7].visible = variant === "splitter"
+  group.children[8].visible = false
 }
 
 function setKindVisual(group: Group, kind: HazardKind, variant: JunkVariant) {
@@ -118,6 +127,7 @@ function setKindVisual(group: Group, kind: HazardKind, variant: JunkVariant) {
   group.children[5].visible = kind === "boost"
   group.children[6].visible = false
   group.children[7].visible = false
+  group.children[8].visible = kind === "magnet"
 }
 
 export function Hazards() {
@@ -135,6 +145,7 @@ export function Hazards() {
   const hudAccumulatorMs = useRef(0)
   const spawnAccumulator = useRef(0)
   const boostRemaining = useRef(0)
+  const magnetRemaining = useRef(0)
   const comboCount = useRef(0)
   const matesCollected = useRef(0)
   const objectiveDone = useRef(false)
@@ -145,6 +156,7 @@ export function Hazards() {
 
   const mateMap = useMemo(() => getMateTexture(), [])
   const medialunaMap = useMemo(() => getMedialunaTexture(), [])
+  const magnetMap = useMemo(() => getMagnetTexture(), [])
 
   const activateAt = (
     kind: HazardKind,
@@ -200,6 +212,10 @@ export function Hazards() {
     if (boostingNow) {
       boostRemaining.current = Math.max(0, boostRemaining.current - frameMs)
     }
+    if (magnetRemaining.current > 0) {
+      magnetRemaining.current = Math.max(0, magnetRemaining.current - frameMs)
+    }
+    const magnetizing = magnetRemaining.current > 0
     const missionFrameMs = frameMs * (boostingNow ? BOOST_TIME_MULT : 1)
     elapsedMs.current += missionFrameMs
     playClock.elapsedMs = elapsedMs.current
@@ -227,12 +243,14 @@ export function Hazards() {
         screen: "win",
         gameTimeMs,
         boostRemainingMs: 0,
+        magnetRemainingMs: 0,
         turbulenceMs: 0,
         achievements: checkAchievements({
           collectedMate: snapshot.collectedMate,
           gameTimeMs,
           usedShield: snapshot.usedShield,
           usedBoost: snapshot.usedBoost,
+          usedMagnet: snapshot.usedMagnet,
           reachedCombo4: reachedCombo4.current,
           objectiveDone: objectiveDone.current,
         }),
@@ -245,6 +263,7 @@ export function Hazards() {
       patchSnapshot({
         gameTimeMs: elapsedMs.current,
         boostRemainingMs: boostRemaining.current,
+        magnetRemainingMs: magnetRemaining.current,
         turbulenceMs: turbulenceRemaining.current,
         comboCount: comboCount.current,
         comboMult: comboMultiplier(comboCount.current),
@@ -315,11 +334,26 @@ export function Hazards() {
 
       group.position.y -= scrollSpeed * dt
 
+      // Magnet pulls mates / medialunas toward the rocket
+      if (
+        magnetizing &&
+        (slot.kind === "mate" || slot.kind === "empanada")
+      ) {
+        const dx = playerPos.x - group.position.x
+        const dy = playerPos.y - group.position.y
+        const dist = Math.hypot(dx, dy)
+        if (dist > 0.05 && dist < MAGNET_RADIUS) {
+          const pull = MAGNET_PULL * dt * (1.15 - dist / MAGNET_RADIUS)
+          group.position.x += (dx / dist) * pull
+          group.position.y += (dy / dist) * pull
+        }
+      }
+
       if (slot.kind === "junk") {
         group.rotation.x += dt * (slot.variant === "heavy" ? 0.7 : 1.2)
         group.rotation.z += dt * 0.7
       }
-      if (slot.kind === "boost") {
+      if (slot.kind === "boost" || slot.kind === "magnet") {
         group.rotation.y += dt * 2.2
       }
 
@@ -386,6 +420,7 @@ export function Hazards() {
           screen: "gameOver",
           gameTimeMs,
           boostRemainingMs: 0,
+          magnetRemainingMs: 0,
           turbulenceMs: 0,
           comboCount: 0,
           comboMult: 1,
@@ -394,6 +429,7 @@ export function Hazards() {
             gameTimeMs,
             usedShield: current.usedShield,
             usedBoost: current.usedBoost,
+            usedMagnet: current.usedMagnet,
             reachedCombo4: reachedCombo4.current,
             objectiveDone: objectiveDone.current,
           }),
@@ -440,6 +476,14 @@ export function Hazards() {
           boostRemainingMs: BOOST_DURATION_MS,
           usedBoost: true,
         })
+      } else if (slot.kind === "magnet") {
+        playSfx("collect")
+        magnetRemaining.current = MAGNET_DURATION_MS
+        patchSnapshot({
+          magnetRemainingMs: MAGNET_DURATION_MS,
+          usedMagnet: true,
+        })
+        showToast("🧲 ¡Imán activado!")
       } else {
         playSfx("shield")
         patchSnapshot({ hasShield: true })
@@ -596,6 +640,33 @@ export function Hazards() {
               <tetrahedronGeometry args={[0.22, 0]} />
               <meshStandardMaterial color="#ca8a04" roughness={1} flatShading />
             </mesh>
+          </group>
+
+          {/* 8: magnet emoji */}
+          <group visible={false}>
+            <mesh>
+              <sphereGeometry args={[0.5, 24, 18]} />
+              <meshStandardMaterial
+                color="#fca5a5"
+                emissive="#ef4444"
+                emissiveIntensity={0.28}
+                transparent
+                opacity={0.32}
+                roughness={0.08}
+                metalness={0.2}
+                depthWrite={false}
+              />
+            </mesh>
+            <Billboard follow>
+              <mesh position={[0, 0, 0.12]}>
+                <planeGeometry args={[0.78, 0.78]} />
+                <meshBasicMaterial
+                  map={magnetMap ?? undefined}
+                  transparent
+                  depthWrite={false}
+                />
+              </mesh>
+            </Billboard>
           </group>
         </group>
       ))}

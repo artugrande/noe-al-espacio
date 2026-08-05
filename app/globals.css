@@ -310,6 +310,28 @@
   animation: noe-float-toast 1.4s ease-out both;
 }
 
+/* Logo tilt / soft 3D hover */
+.noe-logo-tilt {
+  transform-style: preserve-3d;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.35s ease;
+  will-change: transform;
+}
+
+.noe-logo-tilt:hover {
+  transform: perspective(700px) rotateX(10deg) rotateY(-14deg) scale(1.06);
+  filter: drop-shadow(0 18px 28px rgba(56, 189, 248, 0.45));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noe-logo-tilt,
+  .noe-logo-tilt:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

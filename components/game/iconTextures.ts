@@ -33,6 +33,7 @@ function createEmojiTexture(emoji: string) {
 
 let mateTexture: CanvasTexture | null = null
 let medialunaTexture: CanvasTexture | null = null
+let magnetTexture: CanvasTexture | null = null
 
 export function getMateTexture() {
   if (typeof document === "undefined") return null
@@ -44,4 +45,10 @@ export function getMedialunaTexture() {
   if (typeof document === "undefined") return null
   medialunaTexture ??= createEmojiTexture("🥐")
   return medialunaTexture
+}
+
+export function getMagnetTexture() {
+  if (typeof document === "undefined") return null
+  magnetTexture ??= createEmojiTexture("🧲")
+  return magnetTexture
 }

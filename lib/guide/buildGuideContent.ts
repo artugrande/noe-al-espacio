@@ -82,7 +82,7 @@ export const GUIDE_PAGES: GuidePage[] = [
           "Despegás con Espacio. El cohete sale de una base verde bajo cielo celeste.",
           "Te movés con ← → o A / D. Esquivás asteroides y oleadas (muros, V, diagonales).",
           "Juntás 🧉 mates y 🥐 medialunas para sumar puntos y armar combo.",
-          "Power-ups: 🛡️ Escudo te salva una vez. ⚡ Impulso acelera la basura… y el reloj de misión.",
+          "Power-ups: 🛡️ Escudo te salva una vez. ⚡ Impulso acelera la basura… y el reloj. 🧲 Imán atrae mates y medialunas.",
           "Near-miss: pasar cerca de un asteroide da puntos y un cartelito “¡Wow! Estuvo cerca”.",
           "Sobrevivís ~3 minutos, aparece la estación 3D, y si llegás: victoria.",
         ],
@@ -350,9 +350,9 @@ export const GUIDE_PAGES: GuidePage[] = [
       {
         type: "ul",
         items: [
-          "HUD: puntaje, tiempo, escudo, impulso, meta de mates.",
+          "HUD: puntaje, tiempo, escudo, impulso, imán, meta de mates.",
           "Combo: pickups / near-miss seguidos multiplican el score.",
-          "Impulso: acelera peligros y el reloj de misión (te acercás más rápido a la estación).",
+          "Impulso: acelera peligros y el reloj. Imán 🧲: atrae mates y medialunas cercanos.",
           "Escudo: una vida extra con feedback visual en el cohete.",
           "Objetivo secundario: 5 mates → bonus + logro.",
         ],
@@ -448,7 +448,7 @@ export const GUIDE_PAGES: GuidePage[] = [
         type: "ul",
         items: [
           "Cambiá la estética: desierto salteño, glaciares, noche porteña.",
-          "Nuevos power-ups: imán de mates, cámara lenta, faro que revela formaciones.",
+          "Nuevos power-ups: cámara lenta, faro que revela formaciones (el 🧲 imán ya está en el juego).",
           "Modo historia: mensajes de Noe / de una IA de a bordo entre fases.",
           "Multijugador local: dos cohetes, una sola basura espacial.",
           "Datos reales: una curiosidad BCRA/NASA/CONAE por cada logro.",

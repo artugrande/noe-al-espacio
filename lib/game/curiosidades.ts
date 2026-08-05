@@ -30,6 +30,7 @@ export function checkAchievements(input: {
   gameTimeMs: number
   usedShield: boolean
   usedBoost?: boolean
+  usedMagnet?: boolean
   reachedCombo4?: boolean
   objectiveDone?: boolean
 }): AchievementId[] {
@@ -38,6 +39,7 @@ export function checkAchievements(input: {
   if (input.gameTimeMs >= 90_000) out.push("survived_90s")
   if (input.usedShield) out.push("first_shield")
   if (input.usedBoost) out.push("first_boost")
+  if (input.usedMagnet) out.push("first_magnet")
   if (input.reachedCombo4) out.push("combo_x4")
   if (input.objectiveDone) out.push("mate_objective")
   return out

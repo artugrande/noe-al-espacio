@@ -14,6 +14,8 @@ export interface SessionSnapshot {
   hasShield: boolean
   /** Remaining impulso time in ms (0 = inactive). */
   boostRemainingMs: number
+  /** Remaining magnet time in ms (0 = inactive). */
+  magnetRemainingMs: number
   /** Remaining turbulence time in ms. */
   turbulenceMs: number
   comboCount: number
@@ -28,6 +30,7 @@ export interface SessionSnapshot {
   collectedMate: boolean
   usedShield: boolean
   usedBoost: boolean
+  usedMagnet: boolean
   reachedCombo4: boolean
   paused: boolean
 }
@@ -38,6 +41,7 @@ const initialSnapshot: SessionSnapshot = {
   gameTimeMs: 0,
   hasShield: false,
   boostRemainingMs: 0,
+  magnetRemainingMs: 0,
   turbulenceMs: 0,
   comboCount: 0,
   comboMult: 1,
@@ -50,6 +54,7 @@ const initialSnapshot: SessionSnapshot = {
   collectedMate: false,
   usedShield: false,
   usedBoost: false,
+  usedMagnet: false,
   reachedCombo4: false,
   paused: false,
 }

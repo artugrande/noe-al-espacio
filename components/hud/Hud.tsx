@@ -19,6 +19,7 @@ export function Hud() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
   const remainingMs = GAME_DURATION_MS - snapshot.gameTimeMs
   const boostSeconds = Math.ceil(snapshot.boostRemainingMs / 1000)
+  const magnetSeconds = Math.ceil(snapshot.magnetRemainingMs / 1000)
   const turbSeconds = Math.ceil(snapshot.turbulenceMs / 1000)
 
   return (
@@ -75,6 +76,22 @@ export function Hud() {
             <p className="text-xl font-black text-amber-300">
               {snapshot.boostRemainingMs > 0
                 ? `⚡ ¡RÁPIDO! ${boostSeconds}s`
+                : "—"}
+            </p>
+          </div>
+          <div
+            className={`rounded-xl border px-4 py-2 text-right backdrop-blur ${
+              snapshot.magnetRemainingMs > 0
+                ? "border-rose-400/70 bg-rose-500/25 animate-pulse"
+                : "border-rose-400/30 bg-slate-950/70"
+            }`}
+          >
+            <p className="text-xs uppercase tracking-wider text-slate-400">
+              Imán
+            </p>
+            <p className="text-xl font-black text-rose-200">
+              {snapshot.magnetRemainingMs > 0
+                ? `🧲 ¡ATRÁE! ${magnetSeconds}s`
                 : "—"}
             </p>
           </div>

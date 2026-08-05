@@ -1,7 +1,7 @@
 # 🚀 Noe al Espacio
 
 Juego 3D en la web inspirado en **Noel de Castro**, ingeniera de Salta y astronauta argentina.  
-Esquivás basura espacial, juntás mates, usás escudo e impulso… y llegás a la estación.
+Esquivás basura espacial, juntás mates, usás escudo, impulso e imán… y llegás a la estación.
 
 **Jugá online:** [noe-al-espacio.vercel.app](https://noe-al-espacio.vercel.app)
 
@@ -55,7 +55,7 @@ Abrí **http://localhost:3000** en el navegador.
 2. **← →** o **A / D** para moverte  
 3. Esquivá asteroides y oleadas  
 4. Juntá 🧉 mates y 🥐 medialunas (combo = más puntos)  
-5. **🛡️ Escudo** te salva una vez · **⚡ Impulso** acelera todo (¡y el reloj!)  
+5. **🛡️ Escudo** te salva una vez · **⚡ Impulso** acelera todo (¡y el reloj!) · **🧲 Imán** atrae mates y medialunas  
 6. Pasá cerca de un asteroide sin tocarlo → near-miss + cartelito  
 7. Llegá a la estación espacial → ¡ganaste!
 
@@ -150,7 +150,7 @@ Tip: pedí **cambios chicos**. “Hacé todo el juego” suele salir mal. “Hac
 
 ## Créditos e inspiración
 
-- Hecho en **Salta** por [@artugrande](https://github.com/artugrande)  
+- Hecho en **Salta** por [@artugrande](https://x.com/ArtuGrande) · [GitHub](https://github.com/artugrande/noe-al-espacio)  
 - Impulsado por [Desafía](https://www.desafia.tech)  
 - Inspirado en la trayectoria de **Noel de Castro** y en la próxima generación de astronautas argentinos
 

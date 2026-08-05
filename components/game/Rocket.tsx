@@ -27,6 +27,11 @@ export function Rocket({ launched }: { launched: boolean }) {
     () => getSnapshot().boostRemainingMs > 0,
     () => false,
   )
+  const magnetizing = useSyncExternalStore(
+    subscribe,
+    () => getSnapshot().magnetRemainingMs > 0,
+    () => false,
+  )
   const inTurbulence = useSyncExternalStore(
     subscribe,
     () => getSnapshot().turbulenceMs > 0,
@@ -217,6 +222,19 @@ export function Rocket({ launched }: { launched: boolean }) {
             emissiveIntensity={1.1}
             transparent
             opacity={0.85}
+          />
+        </mesh>
+      ) : null}
+
+      {magnetizing ? (
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.78, 0.035, 8, 28]} />
+          <meshStandardMaterial
+            color="#fda4af"
+            emissive="#f43f5e"
+            emissiveIntensity={1}
+            transparent
+            opacity={0.8}
           />
         </mesh>
       ) : null}

@@ -17,4 +17,14 @@ describe("curiosidades", () => {
     expect(ids).toContain("first_mate")
     expect(ids).toContain("survived_90s")
   })
+
+  it("unlocks first_magnet when used", () => {
+    const ids = checkAchievements({
+      collectedMate: false,
+      gameTimeMs: 1_000,
+      usedShield: false,
+      usedMagnet: true,
+    })
+    expect(ids).toContain("first_magnet")
+  })
 })

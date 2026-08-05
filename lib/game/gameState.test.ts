@@ -33,6 +33,7 @@ describe("game session state", () => {
       gameTimeMs: 0,
       hasShield: false,
       boostRemainingMs: 0,
+      magnetRemainingMs: 0,
       turbulenceMs: 0,
       comboCount: 0,
       comboMult: 1,
@@ -45,6 +46,7 @@ describe("game session state", () => {
       collectedMate: false,
       usedShield: false,
       usedBoost: false,
+      usedMagnet: false,
       reachedCombo4: false,
       paused: false,
     })
