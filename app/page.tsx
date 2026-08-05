@@ -7,8 +7,10 @@ import { GameSession } from "@/components/game/GameSession"
 import { Hud } from "@/components/hud/Hud"
 import { LeaderboardPanel } from "@/components/hud/LeaderboardPanel"
 import { MobileControls } from "@/components/hud/MobileControls"
+import { MuteButton } from "@/components/hud/MuteButton"
 import { OrientationWarning } from "@/components/hud/OrientationWarning"
 import { ScorePublishForm } from "@/components/hud/ScorePublishForm"
+import { Soundtrack } from "@/components/hud/Soundtrack"
 import {
   getSnapshot,
   resetSession,
@@ -16,7 +18,7 @@ import {
   subscribe,
   type SessionSnapshot,
 } from "@/components/game/gameState"
-import { unlock } from "@/lib/game/audio"
+import { playSoundtrack, unlock } from "@/lib/game/audio"
 import { pickCuriosity } from "@/lib/game/curiosidades"
 import { fetchLeaderboard } from "@/lib/game/scores"
 import type { AchievementId, HighScoreEntry } from "@/lib/game/types"
@@ -37,6 +39,7 @@ function useSessionSnapshot() {
 
 function startWithAudio() {
   void unlock()
+  void playSoundtrack()
   startPlaying()
 }
 
@@ -362,6 +365,8 @@ export default function NoeAlEspacio() {
         inGame ? "h-screen overflow-hidden" : "overflow-y-auto"
       }`}
     >
+      <Soundtrack />
+      <MuteButton />
       {snapshot.screen === "home" || snapshot.screen === "loading" ? (
         <HomeScreen />
       ) : snapshot.screen === "playing" || snapshot.screen === "win" ? (

@@ -3,6 +3,8 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
+import { MuteButton } from "@/components/hud/MuteButton"
+import { Soundtrack } from "@/components/hud/Soundtrack"
 import { GUIDE_PAGES } from "@/lib/guide/buildGuideContent"
 import { GuideBlocks } from "./GuideBlocks"
 
@@ -41,6 +43,8 @@ export function BuildGuide() {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#0c4a6e_0%,#020617_45%,#000_100%)] text-white">
+      <Soundtrack />
+      <MuteButton />
       <header className="sticky top-0 z-30 border-b border-white/10 bg-slate-950/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-3">

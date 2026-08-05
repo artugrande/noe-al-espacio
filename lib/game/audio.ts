@@ -1,6 +1,8 @@
 export type SfxName = "collect" | "hit" | "win" | "shield" | "boost"
 
 const MUTE_STORAGE_KEY = "noe_v2_muted"
+export const SOUNDTRACK_SRC = "/audio/beyond-the-blue-dust.mp3"
+const SOUNDTRACK_VOLUME = 0.35
 
 const SFX: Record<
   SfxName,
@@ -15,6 +17,7 @@ const SFX: Record<
 
 let audioContext: AudioContext | null = null
 let muted: boolean | null = null
+let soundtrack: HTMLAudioElement | null = null
 
 function readMuted() {
   if (muted !== null) return muted
@@ -34,6 +37,35 @@ export function isMuted() {
   return readMuted()
 }
 
+export function initSoundtrack() {
+  if (typeof window === "undefined" || typeof window.Audio === "undefined") {
+    return null
+  }
+  if (soundtrack) return soundtrack
+
+  soundtrack = new window.Audio(SOUNDTRACK_SRC)
+  soundtrack.loop = true
+  soundtrack.preload = "auto"
+  soundtrack.volume = SOUNDTRACK_VOLUME
+  return soundtrack
+}
+
+export function pauseSoundtrack() {
+  soundtrack?.pause()
+}
+
+export async function playSoundtrack() {
+  const track = initSoundtrack()
+  if (!track || readMuted()) return
+
+  await unlock()
+  try {
+    await track.play()
+  } catch {
+    // Autoplay may be blocked until a user gesture.
+  }
+}
+
 export function setMuted(value: boolean) {
   muted = value
 
@@ -43,6 +75,12 @@ export function setMuted(value: boolean) {
     }
   } catch {
     // Audio still works when storage is unavailable.
+  }
+
+  if (value) {
+    pauseSoundtrack()
+  } else {
+    void playSoundtrack()
   }
 }
 

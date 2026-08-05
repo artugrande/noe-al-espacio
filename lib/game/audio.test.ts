@@ -42,17 +42,32 @@ class FakeAudioContext {
   }
 }
 
+class FakeHtmlAudio {
+  loop = false
+  preload = ""
+  volume = 1
+  src = ""
+  play = vi.fn(async () => undefined)
+  pause = vi.fn()
+
+  constructor(src?: string) {
+    if (src) this.src = src
+  }
+}
+
 function installBrowser(muted: string | null = null) {
   const storage = new Map<string, string>()
   if (muted !== null) storage.set("noe_v2_muted", muted)
 
   vi.stubGlobal("window", {
     AudioContext: FakeAudioContext,
+    Audio: FakeHtmlAudio,
     localStorage: {
       getItem: vi.fn((key: string) => storage.get(key) ?? null),
       setItem: vi.fn((key: string, value: string) => storage.set(key, value)),
     },
   })
+  vi.stubGlobal("Audio", FakeHtmlAudio)
 
   return storage
 }
