@@ -2,11 +2,7 @@
 
 import { useFrame } from "@react-three/fiber"
 import { useSyncExternalStore } from "react"
-import {
-  ARRIVAL_CLEAR_MS,
-  ATMOSPHERE_FADE_MS,
-  GAME_DURATION_MS,
-} from "@/lib/game/constants"
+import { ATMOSPHERE_FADE_MS } from "@/lib/game/constants"
 import { Effects } from "./Effects"
 import { getSnapshot, patchSnapshot, playClock, subscribe } from "./gameState"
 import { Hazards } from "./Hazards"
@@ -44,15 +40,10 @@ function RocketBridge() {
 }
 
 function HazardsBridge() {
+  // Keep mounted for the whole run — the mission clock & win check live here.
   const visible = useSyncExternalStore(
     subscribe,
-    () => {
-      const { screen, gameTimeMs } = getSnapshot()
-      return (
-        screen === "playing" &&
-        gameTimeMs < GAME_DURATION_MS - ARRIVAL_CLEAR_MS + 500
-      )
-    },
+    () => getSnapshot().screen === "playing",
     () => true,
   )
 
