@@ -196,7 +196,7 @@ const en: Record<MessageKey, string> = {
   muteOff: "Mute soundtrack",
   rotateTitle: "Rotate your phone",
   rotateBody: "Play in landscape to see the full mission.",
-  logoAlt: "Noe al Espacio logo: white rocket with mate and stars",
+  logoAlt: "Noe Goes to Space logo: astronaut badge with rocket and stars",
   langEs: "ES",
   langEn: "EN",
   toastNearMiss: "Whoa! That was close",

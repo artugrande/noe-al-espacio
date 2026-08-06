@@ -65,23 +65,33 @@ function HomeScreen() {
     `curiosity.${curiosityIndex}.title` as MessageKey,
   )
   const curiosityBody = t(`curiosity.${curiosityIndex}.body` as MessageKey)
+  const logoSrc =
+    locale === "en"
+      ? "/images/noe-goes-to-space-logo.png"
+      : "/images/noe-al-espacio-logo.png"
+  const logoSize =
+    locale === "en"
+      ? { width: 994, height: 1101 }
+      : { width: 930, height: 1050 }
 
   return (
     <section className="relative min-h-screen bg-[radial-gradient(circle_at_top,#172554,#020617_55%,#000)] px-5 py-8 text-white sm:py-10">
       <div className="mx-auto w-full max-w-4xl pb-12">
         <header className="mb-6 flex flex-col items-center text-center">
           <Image
-            src="/images/noe-al-espacio-logo.png"
+            src={logoSrc}
             alt={t("logoAlt")}
-            width={930}
-            height={1050}
+            width={logoSize.width}
+            height={logoSize.height}
             priority
             className="noe-logo-tilt mb-3 h-auto w-[min(10.5rem,42vw)] drop-shadow-[0_10px_28px_rgba(56,189,248,0.3)] sm:w-[min(12rem,28vw)]"
           />
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
             {t("missionArgentina")}
           </p>
-          <h1 className="sr-only">Noe al Espacio</h1>
+          <h1 className="sr-only">
+            {locale === "en" ? "Noe Goes to Space" : "Noe al Espacio"}
+          </h1>
           <p className="mt-1 max-w-xl text-slate-300">{t("homeTagline")}</p>
         </header>
 
@@ -382,7 +392,7 @@ function GameApp() {
       }`}
     >
       <Soundtrack />
-      <LanguageToggle />
+      {snapshot.screen !== "playing" ? <LanguageToggle /> : null}
       <MuteButton />
       {snapshot.screen === "home" || snapshot.screen === "loading" ? (
         <HomeScreen />
