@@ -9,6 +9,13 @@ export type MessageKey =
   | "workshopTitle"
   | "workshopBody"
   | "workshopCta"
+  | "eventEyebrow"
+  | "eventTitle"
+  | "eventBody"
+  | "eventDate"
+  | "eventVenue"
+  | "eventCta"
+  | "eventPhotoAlt"
   | "madeInSalta"
   | "score"
   | "time"
@@ -80,6 +87,14 @@ const es = {
   workshopBody:
     "Guía educativa: Cursor, stack, prompts, arquitectura y el paso a paso para armar tu misión — en modo presentación o lectura. Inspirado en astronautas argentinos.",
   workshopCta: "Abrir la guía →",
+  eventEyebrow: "Argentina Space 2026",
+  eventTitle: "Vení a conocer más sobre Noe al Espacio Argentina",
+  eventBody:
+    "Noel de Castro — ingeniera biomédica y aeroespacial salteña, candidata a astronauta — es speaker de Argentina Space, el primer gran encuentro nacional de la industria espacial, tecnológica y científica. Tres días para conectar ciencia, industria y la nueva generación espacial.",
+  eventDate: "11, 12 y 13 de noviembre 2026",
+  eventVenue: "Centro de Convenciones · Salta",
+  eventCta: "Conocer el evento →",
+  eventPhotoAlt: "Noel de Castro, candidata a astronauta",
   madeInSalta: "Hecho en Salta por",
   score: "Puntaje",
   time: "Tiempo",
@@ -157,6 +172,14 @@ const en: Record<MessageKey, string> = {
   workshopBody:
     "Educational guide: Cursor, stack, prompts, architecture, and a step-by-step path to build your mission — slide or scroll mode. Inspired by Argentine astronauts.",
   workshopCta: "Open the guide →",
+  eventEyebrow: "Argentina Space 2026",
+  eventTitle: "Come learn more about Noe Goes to Space Argentina",
+  eventBody:
+    "Noel de Castro — biomedical and aerospace engineer from Salta, astronaut candidate — is a speaker at Argentina Space, the first major national gathering of the space, tech and science industry. Three days to connect science, industry and the next space generation.",
+  eventDate: "November 11–13, 2026",
+  eventVenue: "Convention Center · Salta",
+  eventCta: "Visit the event →",
+  eventPhotoAlt: "Noel de Castro, astronaut candidate",
   madeInSalta: "Made in Salta by",
   score: "Score",
   time: "Time",

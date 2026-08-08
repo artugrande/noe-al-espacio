@@ -123,6 +123,65 @@ function HomeScreen() {
           </div>
         </div>
 
+        <a
+          href={
+            locale === "en"
+              ? "https://argentinaspace.com/en"
+              : "https://argentinaspace.com/"
+          }
+          target="_blank"
+          rel="noreferrer"
+          className="mt-5 block overflow-hidden rounded-3xl border border-sky-300/25 bg-gradient-to-br from-sky-500/15 via-indigo-600/10 to-slate-950/40 backdrop-blur transition hover:border-sky-300/55 hover:scale-[1.01]"
+        >
+          <div className="grid gap-0 md:grid-cols-[minmax(0,14rem)_1fr]">
+            <div className="relative min-h-[12rem] md:min-h-full">
+              <Image
+                src="/images/noel-de-castro.jpg"
+                alt={t("eventPhotoAlt")}
+                width={640}
+                height={640}
+                className="h-full w-full object-cover object-top"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-slate-950/50" />
+            </div>
+            <div className="p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-300">
+                {t("eventEyebrow")}
+              </p>
+              <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
+                {t("eventTitle")}
+              </h2>
+              <p className="mt-3 max-w-2xl leading-relaxed text-slate-200">
+                {t("eventBody")}
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-4">
+                <Image
+                  src="/images/centro-convenciones-salta.jpg"
+                  alt={t("eventVenue")}
+                  width={1600}
+                  height={1065}
+                  className="h-16 w-24 rounded-xl object-cover ring-1 ring-white/15"
+                />
+                <dl className="flex flex-col gap-1 text-sm text-slate-300">
+                  <div>
+                    <dt className="sr-only">Fecha</dt>
+                    <dd className="font-semibold text-amber-200">
+                      {t("eventDate")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="sr-only">Lugar</dt>
+                    <dd>{t("eventVenue")}</dd>
+                  </div>
+                </dl>
+              </div>
+              <p className="mt-4 text-sm font-bold text-sky-300">
+                {t("eventCta")}
+              </p>
+            </div>
+          </div>
+        </a>
+
         <Link
           href="/construir"
           className="mt-5 block rounded-3xl border border-amber-300/30 bg-gradient-to-br from-amber-500/15 via-sky-500/10 to-indigo-600/20 p-6 backdrop-blur transition hover:border-amber-300/60 hover:scale-[1.01]"
